@@ -1,0 +1,98 @@
+@import '_colours';
+
+.stepContainer {
+    padding: 1.5rem;
+    width: 100%;
+}
+
+.stepTitle {
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.stepDescription {
+    font-size: 0.875rem;
+    margin-top: 0.4rem;
+    font-weight: 300;
+}
+
+.connectButton {
+    margin-top: 2rem;
+
+    img {
+        width: 1.5rem;
+    }
+}
+
+.callbackContainer {
+    text-align: center;
+}
+
+.connectedSuccess {
+    margin: 1rem 0;
+    
+    img, p {
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    img {
+        width: 1.75rem;
+    }
+
+    p {
+        color: $spotify_green;
+        margin-left: 0.75rem;
+        font-weight: 500;
+    }
+}
+
+.profileDetails {
+    background-color: $grey-90;
+    border-radius: 0.4rem;
+    padding: 0.875rem;
+    min-height: 4.5rem;
+
+    img, p {
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    img {
+        width: 2.75rem;
+        border-radius: 50%;
+    }
+
+    p {
+        margin-left: 0.875rem;
+        font-weight: 500;
+    }
+}
+
+.notYouLink {
+    font-size: 0.875rem;
+    margin-top: 1rem;
+    display: block;
+}
+
+.leftNavButton, .rightNavButton {
+    position: absolute;
+    width: 8.5rem;
+    bottom: 1.5rem;
+}
+
+.leftNavButton {
+    left: 1.5rem;
+}
+
+.rightNavButton {
+    right: 1.5rem;
+}
+
+.inputsContainer {
+    width: 100%;
+}
+
+.nameInput {
+    margin-top: 1rem;
+}

@@ -1,0 +1,42 @@
+service: guestPlayer
+
+provider:
+  name: aws
+  region: eu-west-2
+  profile: personal
+
+plugins:
+  - serverless-s3-deploy
+
+custom:
+  assets:
+      - bucket:
+          Ref: GuestPlayerBucket
+        files:
+        - source: ./build
+          globs:
+            - '**/*'
+
+resources:
+  # AWS CloudFormation Template
+  Resources:
+    GuestPlayerBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: guestplayer-static-site
+        AccessControl: PublicRead
+        WebsiteConfiguration:
+          IndexDocument: index.html
+          ErrorDocument: index.html
+    
+    BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref GuestPlayerBucket
+        PolicyDocument:
+          Statement:
+            - Action:
+                - 's3:GetObject'
+              Effect: Allow
+              Resource: !Sub 'arn:aws:s3:::${GuestPlayerBucket}/*'
+              Principal: '*'

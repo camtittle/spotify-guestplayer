@@ -1,0 +1,65 @@
+@import '_colours';
+
+.header {
+    color: $spotify_green;
+    font-size: 2.5em;
+    margin-top: 24px;
+}
+
+.howTo h2 {
+    font-weight: 500;
+    margin: 1em 0;
+}
+
+.howTo {
+    padding: 0 1.5em;
+    flex-grow: 1;
+    margin-bottom: 1rem;
+
+    h3 {
+        color: $spotify_green;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        margin: 1.5rem 0 0.5rem 0;
+        font-size: 1.125rem;
+    
+        .stepNumber {
+            display: inline-block;
+            color: $spotify_green;
+            font-size: 0.6rem;
+            border: $spotify_green 1px solid;
+            border-radius: 50%;
+            height: 1.5rem;
+            width: 1.5rem;
+            padding-left: 0.55rem;
+            padding-top: 0.25rem;
+            margin-right: 0.5rem;
+        }
+    }
+    
+    p {
+        width: 75%;
+    }
+}
+
+.actionBarContainer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 2rem 3rem 2rem;
+
+    h3 {
+        color: white;
+        font-weight: 500;
+        margin: 2.5rem 0;
+        font-size: 1.5rem;
+    }
+}
+
+.or {
+    margin: 0.75rem 0;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    font-weight: 600;
+}

@@ -1,0 +1,51 @@
+@import '_colours';
+
+.back {
+    position: absolute;
+    top: 2.3rem;
+    left: 1rem;
+}
+
+.header {
+    color: $spotify_green;
+    font-size: 2.5em;
+    margin: 1.5rem 0 1rem 0;
+}
+
+.camera {
+    padding: 2rem;
+    width: 100%;
+    max-width: 400px;
+    flex-grow: 1;
+
+    video, section {
+        border-radius: 1rem;
+    }
+
+    section section div {
+        box-shadow: rgba(136, 135, 135, 0.26) 0px 0px 0px 5px inset !important;
+    } 
+}
+
+.actionBarContainer {
+    padding: 0 1rem;
+}
+
+.help {
+    text-align: center;
+    margin: 2.5rem 0 2rem 0;
+}
+
+.positioningHelp {
+    font-size: 1rem;
+}
+
+.linkHelp, .linkHelpHeader {
+    color: $grey-90;
+    font-size: 0.75rem;
+}
+
+.linkHelpHeader {
+    margin-top: 1rem;
+    font-weight: 500;
+}

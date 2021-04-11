@@ -1,0 +1,11 @@
+.back {
+    display: block;
+    width: 1rem;
+    height: 1rem;
+    background-color: transparent;
+    border: none;
+    background-image: url('../../../assets/img/back.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    cursor: pointer;
+}

@@ -1,0 +1,15 @@
+/* Transitions */
+.step1-appear, .step2-appear {
+    opacity: 0.01;
+}
+
+.step1-appear.step1-appear-active {
+    opacity: 1;
+    transition: opacity 1s;
+}
+
+.step2-appear.step2-appear-active {
+    opacity: 1;
+    transition: opacity 1s;
+    transition-delay: 600ms;
+}
