@@ -11,5 +11,9 @@ namespace Spotify.Client
     {
         [Post("/token")]
         Task<GetAccessTokenResponse> GetAccessToken([Body(BodySerializationMethod.UrlEncoded)] GetAccessTokenRequest request);
+
+
+        [Get("/tracks/{id}")]
+        Task<TrackResponse> GetTrack(string id, [Authorize("Bearer")] string token);
     }
 }

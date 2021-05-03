@@ -25,9 +25,36 @@ namespace Database.Repositories
         }
 
 
-        public async Task Put(Party party)
+        public async Task PutParty(Party party)
         {
-            await _container.CreateItemAsync<Party>(party, new PartitionKey(party.Id));
+            party.LastUpdated = DateTime.UtcNow;
+            await _container.CreateItemAsync<Party>(party, new PartitionKey(party.PartyId));
+        }
+
+        public async Task<Party> GetParty(string id)
+        {
+            try
+            {
+                ItemResponse<Party> response = await _container.ReadItemAsync<Party>(id, new PartitionKey(id));
+                return response.Resource;
+            }
+            catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                return null;
+            }
+
+        }
+
+        public async Task UpdateParty(Party party)
+        {
+            party.LastUpdated = DateTime.UtcNow;
+            await _container.UpsertItemAsync<Party>(party, new PartitionKey(party.PartyId));
+        }
+
+        public async Task PutTrackRequest(TrackRequest request)
+        {
+            request.LastUpdated = DateTime.UtcNow;
+            await _container.CreateItemAsync<TrackRequest>(request, new PartitionKey(request.PartyId));
         }
     }
 }

@@ -15,7 +15,7 @@ namespace guestplayer_server.Models
         public string RefreshToken { get; set; }
 
         [Required]
-        public int ExpiresIn { get; set; }
+        public DateTime ExpiresAt { get; set; }
     }
 
     public class CreatePartyRequest

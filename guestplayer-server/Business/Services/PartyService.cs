@@ -1,5 +1,7 @@
 ﻿using Domain.DTOs;
 using Domain.Entities;
+using Domain.Enums;
+using Domain.Exceptions;
 using Domain.Interfaces.Respoitories;
 using Domain.Interfaces.Services;
 using System;
@@ -20,14 +22,42 @@ namespace Business.Services
 
         public async Task<Party> CreateParty(CreatePartyParams partyParams)
         {
-            // TODO
+            var id = Guid.NewGuid().ToString();
             var party = new Party
             {
-                Id = Guid.NewGuid().ToString(),
-                Name = partyParams.PartyName
+                Id = id,
+                Type = ItemType.Party,
+                PartyId = id,
+                Name = partyParams.PartyName,
+                GuestCount = 0,
+                SpotifyCredentials = partyParams.SpotifyCredentials,
+                CreatedAt = DateTime.UtcNow,
+                LastUpdated = DateTime.UtcNow
             };
 
-            await _partyRepository.Put(party);
+            await _partyRepository.PutParty(party);
+
+            return party;
+        }
+
+        public async Task<Party> GetParty(string id)
+        {
+            var party = await _partyRepository.GetParty(id);
+
+            return party;
+        }
+
+        public async Task<Party> JoinParty(string id)
+        {
+            var party = await GetParty(id);
+
+            if (party == null)
+            {
+                throw new NotFoundException();
+            }
+
+            party.GuestCount++;
+            await _partyRepository.UpdateParty(party);
 
             return party;
         }

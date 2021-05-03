@@ -1,38 +1,23 @@
 import SpotifyWebApi from "spotify-web-api-js";
-import { environment } from "../../envionment";
 import { SpotifyProfile } from "../../models/SpotifyProfile";
-import * as ApiService from "../apiService";
+import * as ApiService from "./apiService";
 import { GetAccessTokenRequest } from "../models/getAccessTokenRequest";
 import { GetAccessTokenResponse } from "../models/getAccessTokenResponse";
 
 
 enum Endpoint {
-  Token = 'Token'
-};
-
-const endpoints = {
-  [Endpoint.Token]: '/spotify/token'
+  Token = '/spotify/token'
 };
 
 let token: string;
 let spotifyClient: SpotifyWebApi.SpotifyWebApiJs;
 
-const getEndpointUrl = (endpoint: Endpoint) => {
-  const endpointPath = endpoints[endpoint];
-  if (!endpointPath) {
-    throw new Error(`Cannot find URL for endpoint ${endpoint}`)
-  }
-
-  return environment.apiBaseUrl + endpointPath;
-}
-
 export const getAccessToken = async (code: string): Promise<GetAccessTokenResponse> => {
-  const endpointUrl = getEndpointUrl(Endpoint.Token);
   const body: GetAccessTokenRequest = {
     code: code
   };
 
-  const response = await ApiService.post<GetAccessTokenRequest, GetAccessTokenResponse>(endpointUrl, body);
+  const response = await ApiService.post<GetAccessTokenResponse>(Endpoint.Token, body);
   token = response.accessToken;
   return response;
 }

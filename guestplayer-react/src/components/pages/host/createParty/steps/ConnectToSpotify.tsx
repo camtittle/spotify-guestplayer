@@ -4,12 +4,12 @@ import spotifyLogo from '../../../../../assets/img/spotify.svg';
 import BuildUrl from 'build-url';
 import { environment } from '../../../../../envionment';
 import { v4 as uuid } from 'uuid';
-import { SpotifyAccessToken } from '../../../../../models/SpotifyAccessToken';
 import { SpotifyProfileDetails } from './SpotifyProfileDetails';
-import { useHistory, useRouteMatch } from 'react-router';
+import { useHistory } from 'react-router';
+import { useContext } from 'react';
+import { PartyContext } from '../../../../../contexts/partyContext';
 
 interface ConnectToSpotifyProps {
-  token?: SpotifyAccessToken;
   nextPath: string;
 };
 
@@ -26,6 +26,7 @@ const stateKey = 'spotify-auth-state';
 export const ConnectToSpotify = (props: ConnectToSpotifyProps) => {
 
   const history = useHistory();
+  const { spotifyCredentials } = useContext(PartyContext);
 
   const generateState = () => {
     const state = uuid();
@@ -66,16 +67,16 @@ export const ConnectToSpotify = (props: ConnectToSpotifyProps) => {
       <h1 className={styles.stepTitle}>Host a party</h1>
       <p className={styles.stepDescription}>Log in with Spotify so GuestPlayer can play tracks and add them to the queue</p>
 
-      { !props.token &&
+      { !spotifyCredentials &&
         <Button style={ButtonStyle.GreenPrimary} className={styles.connectButton} icon={spotifyLogo} iconAltText="Spotify Logo" onClick={onClickConnectToSpotify}>Connect to Spotify</Button>
       }
 
-      <SpotifyProfileDetails token={props.token} onClickLoginAsSomeoneElse={() => redirectToSpotify(true)}></SpotifyProfileDetails>
+      <SpotifyProfileDetails token={spotifyCredentials} onClickLoginAsSomeoneElse={() => redirectToSpotify(true)}></SpotifyProfileDetails>
 
       <div>
         <Button style={ButtonStyle.WhiteSecondary} className={styles.leftNavButton} onClick={onClickCancel}>Cancel</Button>
 
-        {props.token &&
+        {spotifyCredentials &&
           <Button style={ButtonStyle.WhitePrimary} className={styles.rightNavButton} onClick={onClickNext}>Next</Button>
         }
       </div>

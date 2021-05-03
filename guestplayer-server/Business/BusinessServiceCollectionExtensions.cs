@@ -14,6 +14,7 @@ namespace Business
         public static void AddServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddScoped<IPartyService, PartyService>();
+            services.AddScoped<ITrackRequestService, TrackRequestService>();
         }
     }
 }

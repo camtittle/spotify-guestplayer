@@ -1,0 +1,45 @@
+.actionBarContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 8rem 2rem 3rem 2rem;
+}
+
+.headerContainer {
+    flex-grow: 1;
+    margin-top: 4rem;
+}
+
+.topButton {
+    margin-bottom: 1rem;
+}
+
+.qrContainer {
+    position: relative;
+    text-align: center;
+    bottom: 0;
+    top: 6rem;
+    z-index: 2;
+
+    p {
+        font-size: 0.75rem;
+        margin-top: 0.4rem;
+    }
+}
+
+.qrCode {
+    position: relative;
+    width: 11rem;
+    height: 11rem;
+    background-color: white;
+
+    img {
+        width: 100%;
+        opacity: 0;
+        transition: opacity 2s;
+    }
+}
+
+.qrCode>img.loaded {
+    opacity: 1;
+}

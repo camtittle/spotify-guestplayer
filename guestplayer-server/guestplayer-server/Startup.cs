@@ -1,5 +1,7 @@
 using Business;
 using Database;
+using Domain.Config;
+using guestplayer_server.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -14,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApi.Helpers;
 
 namespace guestplayer_server
 {
@@ -37,6 +40,12 @@ namespace guestplayer_server
                     options.AddDefaultPolicy(builder => builder.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader());
                 });
 
+
+            // Auth
+            services.AddScoped<JwtService>();
+
+            // Config
+            services.Configure<AuthConfig>(Configuration.GetSection(AuthConfig.SectionName));
 
             // Spotify
             services.AddSpotifyClient(Configuration);
@@ -66,7 +75,7 @@ namespace guestplayer_server
 
             app.UseCors();
 
-            app.UseAuthorization();
+            app.UseMiddleware<JwtMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {

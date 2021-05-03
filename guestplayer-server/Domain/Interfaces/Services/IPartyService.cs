@@ -10,5 +10,7 @@ namespace Domain.Interfaces.Services
     public interface IPartyService
     {
         public Task<Party> CreateParty(CreatePartyParams partyParams);
+        public Task<Party> GetParty(string id);
+        public Task<Party> JoinParty(string id);
     }
 }

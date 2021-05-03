@@ -23,20 +23,20 @@ namespace guestplayer_server.Controllers
         [HttpPost("token")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<string>> Create(GetSpotifyAccessTokenRequest request)
+        public async Task<ActionResult<string>> GetToken(GetSpotifyAccessTokenRequest request)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState.ValidationState);
             }
 
-            var tokens = await _spotifyService.getAccessToken(request.Code);
+            var tokens = await _spotifyService.GetAccessToken(request.Code);
 
             var response = new GetSpotifyAccessTokenResponse
             {
                 AccessToken = tokens.AccessToken,
                 RefreshToken = tokens.RefreshToken,
-                ExpiresIn = tokens.ExpiresIn
+                ExpiresAt = tokens.ExpiresAt
             };
 
             return Ok(response);

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { SpotifyAccessToken } from "../../../../../models/SpotifyAccessToken";
+import { SpotifyCredentials } from "../../../../../models/SpotifyCredentials";
 import { SpotifyProfile } from "../../../../../models/SpotifyProfile";
 import * as SpotifyService from '../../../../../api/services/spotifyService';
 import styles from '../CreateParty.module.scss';
 import greenTick from '../../../../../assets/img/checked.svg';
 
 interface SpotifyProfileDetailsProps {
-  token?: SpotifyAccessToken;
+  token?: SpotifyCredentials;
   onClickLoginAsSomeoneElse: () => void;
 };
 

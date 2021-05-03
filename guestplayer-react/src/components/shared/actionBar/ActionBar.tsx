@@ -1,5 +1,5 @@
 import styles from './ActionBar.module.scss';
-import ellipse from '../../../assets/img/actionbar-ellipse.svg';
+import Ellipse from '../../../assets/img/actionbar-ellipse.svg';
 
 interface ActionBarProps {
   fillHeight?: boolean;
@@ -13,9 +13,13 @@ export const ActionBar = (props: ActionBarProps) => {
     classNames.push(styles.fillHeight);
   }
 
+  const ellipseStyle = {
+    backgroundImage: `url(${Ellipse})`
+  }
+
   return (
     <div className={classNames.join(' ')}>
-      <div className={styles.ellipse}></div>
+      <div className={styles.ellipse} style={ellipseStyle}></div>
       <div className={styles.rectangle}></div>
       {props.children}
     </div>

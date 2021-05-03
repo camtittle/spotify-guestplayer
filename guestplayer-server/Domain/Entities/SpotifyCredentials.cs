@@ -8,8 +8,7 @@ namespace Domain.Entities
     {
         public string AccessToken { get; set; }
 
-        public int ExpiresIn { get; set; }
-
         public string RefreshToken { get; set; }
+        public DateTime ExpiresAt { get; set; }
     }
 }

@@ -1,9 +1,13 @@
 ﻿using Domain.Entities;
+using Domain.Exceptions;
 using Domain.Interfaces.Services;
 using Microsoft.Extensions.Options;
+using Refit;
 using Spotify.Client;
 using Spotify.Client.Models;
 using System;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Spotify
@@ -16,13 +20,22 @@ namespace Spotify
         private readonly ISpotifyClient _spotifyClient;
         private readonly SpotifyConfig _config;
 
-        public SpotifyService(ISpotifyClient SpotifyClient, IOptions<SpotifyConfig> options)
+        private string _accessToken;
+
+        private const int ARTWORK_SIZE = 64;
+
+        public SpotifyService(ISpotifyClient spotifyClient, IOptions<SpotifyConfig> options)
         {
-            _spotifyClient = SpotifyClient;
+            _spotifyClient = spotifyClient;
             _config = options.Value;
         }
 
-        public async Task<SpotifyCredentials> getAccessToken(string code)
+        public void SetAccessToken(string token)
+        {
+            _accessToken = token;
+        }
+
+        public async Task<SpotifyCredentials> GetAccessToken(string code)
         {
             var request = new GetAccessTokenRequest
             {
@@ -36,11 +49,44 @@ namespace Spotify
             var spotifyTokens = new SpotifyCredentials
             {
                 AccessToken = response.AccessToken,
-                ExpiresIn = response.ExpiresIn,
-                RefreshToken = response.RefreshToken
+                RefreshToken = response.RefreshToken,
+                ExpiresAt = DateTime.UtcNow.AddSeconds(response.ExpiresIn)
             };
 
             return spotifyTokens;
+        }
+
+        public async Task<Track> GetTrack(string id)
+        {
+            if (_accessToken == null)
+            {
+                throw new Exception("You must set access token first");
+            }
+
+            try
+            {
+                var track = await _spotifyClient.GetTrack(id, _accessToken);
+
+                return new Track()
+                {
+                    Id = track.Id,
+                    Title = track.Name,
+                    DurationMs = track.DurationMs,
+                    ArtworkUrl = track.Album.Images.Where(x => x.Height == ARTWORK_SIZE).FirstOrDefault().Url,
+                    Artist = string.Join(", ", track.Artists.Select(x => x.Name)),
+                    Album = track.Album.Name
+                };
+
+            } catch (ApiException ex)
+            {
+                if (ex.StatusCode == HttpStatusCode.NotFound)
+                {
+                    throw new NotFoundException("Track not found");
+                } else
+                {
+                    throw ex;
+                }
+            }
         }
     }
 }

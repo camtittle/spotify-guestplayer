@@ -1,5 +1,5 @@
 export interface GetAccessTokenResponse {
   accessToken: string;
-  expiresIn: number;
+  expiresAt: string;
   refreshToken: string;
 }

@@ -1,14 +1,13 @@
-import { useLocation } from 'react-router';
+import { useHistory, useLocation } from 'react-router';
 import queryString from 'query-string';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { PropagateLoader } from 'react-spinners';
 import * as SpotifyService from '../../../../../api/services/spotifyService';
 import { GetAccessTokenResponse } from '../../../../../api/models/getAccessTokenResponse';
-import { SpotifyAccessToken } from '../../../../../models/SpotifyAccessToken';
 import styles from '../CreateParty.module.scss';
+import { PartyContext } from '../../../../../contexts/partyContext';
 
 interface SpotifyCallbackProps {
-  setTokenResult: (result?: SpotifyAccessToken) => void;
 }
 
 const stateKey = 'spotify-auth-state';
@@ -16,6 +15,8 @@ const stateKey = 'spotify-auth-state';
 export const SpotifyCallback = (props: SpotifyCallbackProps) => {
 
   const location = useLocation();
+  const history = useHistory();
+  const { spotifyCredentials, setSpotifyCredentials } = useContext(PartyContext);
 
   const params = queryString.parse(location.search);
   const code = params.code as string;
@@ -33,7 +34,7 @@ export const SpotifyCallback = (props: SpotifyCallbackProps) => {
     return {
       accessToken: result.accessToken,
       refreshToken: result.refreshToken,
-      expiresIn: result.expiresIn
+      expiresAt: result.expiresAt
     };
   }
 
@@ -49,11 +50,14 @@ export const SpotifyCallback = (props: SpotifyCallbackProps) => {
 
     exchangeToken(code)
       .then(result => {
-        props.setTokenResult(result);
+        setSpotifyCredentials(result);
+        if (result) {
+          history.push(`/party/create`);
+        }
       })
       .catch(error => {
         console.error(error);
-        props.setTokenResult(undefined);
+        setSpotifyCredentials(undefined);
         setError('An error occured connecting to Spotify. Please try again.');
       });
   }, [code, receivedState]);

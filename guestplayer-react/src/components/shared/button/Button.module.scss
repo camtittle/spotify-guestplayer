@@ -12,14 +12,17 @@
     font-family: 'Roboto', sans-serif;
     font-size: 1rem;
     cursor: pointer;
-    transition: background-color 0.15s, border-color 0.15s, transform 0.15s;
+    transition: background-color 0.15s, border-color 0.15s;
+    position: relative;
 
-    &:hover {
-        background-color: #ebe9e9;
-    }
-
-    &:active {
-        transform: translateY(1px);
+    &:not(.disabled):not(.loading) {
+        &:hover {
+            background-color: #ebe9e9;
+        }
+    
+        &:active {
+            transform: translateY(1px);
+        }
     }
 }
 
@@ -27,8 +30,9 @@
     background-color: transparent;
     border: white 1px solid;
     color: white;
+    box-shadow: none;
 
-    &:hover {
+    &:hover:not(.disabled):not(.loading) {
         background-color: transparent;
     }
 }
@@ -37,7 +41,7 @@
     background-color: $spotify_green;
     color: white;
 
-    &:hover {
+    &:hover:not(.disabled):not(.loading) {
         background-color: #1c9145;
     }
 }
@@ -57,6 +61,18 @@
     }
 }
 
+.buttonContainer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    overflow-y: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .icon {
     display: inline-block;
     width: 1.1rem;
@@ -66,4 +82,12 @@
 
 .label {
     vertical-align: middle;
+}
+
+.loadingSpinner {
+    font-size: 70px;
+}
+
+.loading {
+    display: block;
 }

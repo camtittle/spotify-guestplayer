@@ -8,6 +8,8 @@ namespace Domain.Interfaces.Services
 {
     public interface ISpotifyService
     {
-        Task<SpotifyCredentials> getAccessToken(String code);
+        void SetAccessToken(string token);
+        Task<SpotifyCredentials> GetAccessToken(String code);
+        Task<Track> GetTrack(string uri);
     }
 }

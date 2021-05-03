@@ -8,4 +8,11 @@
     color: $spotify_green;
     font-size: 1rem;
     width: 100%;
+
+    transition: border-color 300ms, color 300ms;
+
+    &:disabled {
+        border-color: $grey-50;
+        color: $grey-50;
+    }
 }

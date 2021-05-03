@@ -4,6 +4,7 @@ import styles from './TextInput.module.scss';
 export interface TextInputProps {
   className: string;
   value: string;
+  disabled?: boolean;
   onChange: (value: string) => void;
 }
 
@@ -25,7 +26,7 @@ export class TextInput extends Component<TextInputProps> {
     const classNames = [styles.textInput, this.props.className];
 
     return (
-      <input type="text" className={classNames.join(' ')} value={this.props.value} onChange={this.onChange} ref={this.inputRef}/>
+      <input type="text" className={classNames.join(' ')} value={this.props.value} onChange={this.onChange} ref={this.inputRef} disabled={this.props.disabled}/>
     );
 
   }

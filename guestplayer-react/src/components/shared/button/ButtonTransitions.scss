@@ -1,0 +1,21 @@
+.button-loading-transition-enter {
+    transform: translateY(20px);
+    opacity: 0;
+}
+
+.button-loading-transition-enter.button-loading-transition-enter-active {
+    transform: translateY(0);
+    opacity: 1;
+    transition: transform 0.15s, opacity 0.15s;
+}
+
+.button-loading-transition-exit {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.button-loading-transition-exit.button-loading-transition-exit-active {
+    transform: translateY(-20px);
+    opacity: 0;
+    transition: transform 0.15s, opacity 0.15s;
+}

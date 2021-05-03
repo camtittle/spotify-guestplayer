@@ -12,7 +12,5 @@ namespace Spotify.Client.Models
         public string Secret { get; set; }
         public string ApiBaseUrl { get; set; }
         public string RedirectUri { get; set; }
-
-
     }
 }
