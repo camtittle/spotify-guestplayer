@@ -1,0 +1,67 @@
+@import '_colours';
+
+.container {
+    display: flex;
+    align-items: center;
+    padding: 8px 8px 8px 8px;
+    border-radius: 4px;
+    transition: background-color 0.1s;
+    width: 100%;
+    border: none;
+    background: none;
+    text-align: left;
+    color: white;
+    cursor: default;
+}
+
+.clickable {
+    cursor: pointer;
+    transition: transform 0.2s;
+
+    &:hover, &:focus {
+        cursor: pointer;
+        background-color: $grey-90;
+    }
+
+    &:active {
+        transform: scale(0.97);
+    }
+
+}
+
+.artwork {
+    width: 52px;
+    height: 52px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.metadata {
+    min-width: 0;
+    font-size: 0.875rem;
+    margin-left: 14px;
+}
+
+.title, .subtitle {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.title {
+    margin-bottom: 2px;
+}
+
+.subtitle {
+    color: $grey-40;
+}
+
+.separator {
+    width: 0.25rem;
+    height: 0.25rem;
+    display: inline-block;
+    background-color: $grey-40;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin: 0 0.3125rem 2px 0.3125rem;
+}

@@ -7,16 +7,13 @@ import { GetAccessTokenResponse } from '../../../../../api/models/getAccessToken
 import styles from '../CreateParty.module.scss';
 import { PartyContext } from '../../../../../contexts/partyContext';
 
-interface SpotifyCallbackProps {
-}
-
 const stateKey = 'spotify-auth-state';
 
-export const SpotifyCallback = (props: SpotifyCallbackProps) => {
+export const SpotifyCallback = () => {
 
   const location = useLocation();
   const history = useHistory();
-  const { spotifyCredentials, setSpotifyCredentials } = useContext(PartyContext);
+  const { setSpotifyCredentials } = useContext(PartyContext);
 
   const params = queryString.parse(location.search);
   const code = params.code as string;
@@ -42,6 +39,7 @@ export const SpotifyCallback = (props: SpotifyCallbackProps) => {
     const stateIsValid = validateStoredState(receivedState);
     const codeIsValid = code !== undefined && code !== null;
     const paramsAreValid = stateIsValid && codeIsValid;
+    console.log({ code, receivedState });
     if (!paramsAreValid) {
       console.error('Invalid redirect params');
       setError('An error occured connecting to Spotify. Please try again');

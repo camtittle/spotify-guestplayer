@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace Domain.Interfaces.Services
 {
-    public interface ISpotifyService
+    public interface IGuestSpotifyService
     {
-        void SetAccessToken(string token);
-        Task<SpotifyCredentials> GetAccessToken(String code);
+        Task<Track[]> SearchTracks(string term);
         Task<Track> GetTrack(string uri);
     }
 }

@@ -5,9 +5,8 @@ using System.Text.Json.Serialization;
 
 namespace Spotify.Client.Models
 {
-    class GetAccessTokenResponse
+    public class GetAccessTokenResponse
     {
-
         [JsonPropertyName("access_token")]
         public string AccessToken { get; set; }
 

@@ -13,3 +13,14 @@
     transition: opacity 1s;
     transition-delay: 600ms;
 }
+
+.actionBar-appear {
+    transform: translateY(50%);
+    opacity: 0;
+}
+
+.actionBar-appear.actionBar-appear-active {
+    transform: none;
+    opacity: 1;
+    transition: transform 0.5s, opacity 0.5s;
+}

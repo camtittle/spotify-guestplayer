@@ -2,7 +2,6 @@ import { Button, ButtonStyle } from '../../../../shared/button/Button';
 import styles from '../CreateParty.module.scss';
 import spotifyLogo from '../../../../../assets/img/spotify.svg';
 import BuildUrl from 'build-url';
-import { environment } from '../../../../../envionment';
 import { v4 as uuid } from 'uuid';
 import { SpotifyProfileDetails } from './SpotifyProfileDetails';
 import { useHistory } from 'react-router';
@@ -38,9 +37,9 @@ export const ConnectToSpotify = (props: ConnectToSpotifyProps) => {
     const url = BuildUrl(spotifyAuthBaseUrl, {
       path: spotifyAuthPath,
       queryParams: {
-        'client_id': environment.spotifyClientId,
+        'client_id': process.env.REACT_APP_SPOTIFY_CLIENT_ID as string,
         'response_type': responseCode,
-        'redirect_uri': environment.spotifyRedirectUri,
+        'redirect_uri': process.env.REACT_APP_SPOTIFY_CALLBACK as string,
         'scope': scopes,
         'state': generateState(),
         'show_dialog': force ? 'true' : 'false'

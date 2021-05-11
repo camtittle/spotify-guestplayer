@@ -26,6 +26,8 @@
 }
 
 .details {
+    width: 100%;
+    position: relative;
     text-align: center;
     margin-bottom: 5.1rem;
     flex-grow: 1;
@@ -41,6 +43,18 @@
     }
 }
 
+.detailsInner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
 .spacer {
     height: 1.5rem;
+}
+
+.tick {
+    width: 2.5rem;
+    margin-top: 16px;
 }

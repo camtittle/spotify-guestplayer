@@ -1,21 +1,43 @@
-.details-enter {
+.joinFade-enter, .joinFade-exit.joinFade-exit-active {
     opacity: 0;
     transform: scale(1.15);
 }
 
-.details-enter.details-enter-active {
+.joinFade-enter.joinFade-enter-active, .joinFade-exit {
     opacity: 1;
     transform: scale(1);
     transition: opacity 0.5s, transform 0.5s;
 }
 
-.action-bar-enter {
+.action-bar-enter, .action-bar-exit.action-bar-exit-active {
     transform: translateY(110%);
     opacity: 0;
 }
 
-.action-bar-enter.action-bar-enter-active {
+.action-bar-enter.action-bar-enter-active, .action-bar-exit {
     transform: none;
     opacity: 1;
     transition: transform 0.5s, opacity 0.5s;
+}
+
+.spinFade-enter {
+    opacity: 0;
+    transform: rotate(-90deg);
+}
+
+.spinFade-enter.spinFade-enter-active {
+    opacity: 1;
+    transform: rotate(0deg);
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.spinFade-exit {
+    opacity: 1;
+    transform: rotate(0deg);
+}
+
+.spinFade-exit.spinFade-exit-active {
+    opacity: 0;
+    transform: rotate(90deg);
+    transition: opacity 0.3s, transform 0.3s;
 }

@@ -5,14 +5,22 @@ import PartyHome from "../../../shared/partyHome/PartyHome";
 import styles from './HostHome.module.scss';
 import MusicalNotes from '../../../../assets/img/musical-note.svg';
 import Share from '../../../../assets/img/share.svg';
+import { Role } from "../../../../api/models/role";
 
 export default function HostHome() {
 
   const { party, partyLoaded } = useContext(PartyContext);
   const history = useHistory();
+
   useEffect(() => {
-    if (partyLoaded && !party) {
-      history.push('/');
+    console.log({ party });
+    if (partyLoaded) {
+      console.log('loaded');
+      if (!party) {
+        history.push('/');
+      } else if (party.role === Role.Guest) {
+        history.push('/party/guest')
+      }
     }
   }, [party, partyLoaded, history]);
 
@@ -31,7 +39,8 @@ export default function HostHome() {
 
   const primaryButton = {
     label: 'View requests',
-    icon: MusicalNotes
+    icon: MusicalNotes,
+    onClick: () => { }
   };
 
   const secondaryButton = {

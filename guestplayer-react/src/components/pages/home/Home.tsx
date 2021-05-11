@@ -4,25 +4,38 @@ import styles from './Home.module.scss';
 import cameraIcon from './../../../assets/img/camera.svg';
 import balloonsIcon from './../../../assets/img/balloons.svg';
 import { useHistory } from "react-router-dom";
-import { History } from 'history';
 import FlexContainer from '../../shared/container/FlexContainer';
 import { CSSTransition  } from 'react-transition-group'
 import './HomeTransitions.scss';
-
-const onClickScan = (history: History) => {
-  history.push('/scan');
-}
-
-const onClickCreateParty = (history: History) => {
-  history.push('/party/create');
-}
+import { useContext, useEffect } from 'react';
+import { PartyContext } from '../../../contexts/partyContext';
+import { Role } from '../../../models/Role';
 
 export default function Home() {
 
   const history = useHistory();
+  const { party } = useContext(PartyContext);
+
+  useEffect(() => {
+    if (party) {
+      if (party.role === Role.Guest) {
+        history.push('/party/guest')
+      } else if (party.role === Role.Host) {
+        history.push('/party/host')
+      }
+    }
+  }, [party]);
+
+  const onClickScan = () => {
+    history.push('/scan');
+  }
+
+  const onClickCreateParty = () => {
+    history.push('/party/create');
+  }
 
   return (
-    <FlexContainer>
+    <FlexContainer className={styles.container}>
       <h1 className={styles.header}>GuestPlayer</h1>
 
       <div className={styles.howTo}>
@@ -47,19 +60,19 @@ export default function Home() {
           </div>
         </CSSTransition>
       </div>
-
+      
       <ActionBar>
-        <div className={styles.actionBarContainer}>
-          <h3>
-            Get Started
-          </h3>
+          <div className={styles.actionBarContainer}>
+            <h3>
+              Get Started
+            </h3>
 
-          <Button style={ButtonStyle.WhitePrimary} icon={cameraIcon} iconAltText="Camera" onClick={() => onClickScan(history)} >Scan QR code</Button>
-          <div className={styles.or}>or</div>
-          <Button style={ButtonStyle.WhiteSecondary} icon={balloonsIcon} iconAltText="Balloons" onClick={() => onClickCreateParty(history)}>Host a party</Button>
+            <Button style={ButtonStyle.WhitePrimary} icon={cameraIcon} iconAltText="Camera" onClick={onClickScan}>Scan QR code</Button>
+            <div className={styles.or}>or</div>
+            <Button style={ButtonStyle.WhiteSecondary} icon={balloonsIcon} iconAltText="Balloons" onClick={onClickCreateParty}>Host a party</Button>
 
-        </div>
-      </ActionBar>
+          </div>
+        </ActionBar>
     </FlexContainer>
   )
 }

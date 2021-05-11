@@ -56,7 +56,9 @@ namespace guestplayer_server.Controllers
             {
                 Id = party.PartyId,
                 Name = party.Name,
-                Token = jwt
+                Token = jwt,
+                GuestCount = 0,
+                Role = JwtRole.HOST
             };
 
             return Ok(response);
@@ -108,7 +110,8 @@ namespace guestplayer_server.Controllers
                     Id = party.PartyId,
                     Name = party.Name,
                     GuestCount = party.GuestCount,
-                    Token = jwt
+                    Token = jwt,
+                    Role = JwtRole.GUEST
                 };
 
                 return Ok(response);

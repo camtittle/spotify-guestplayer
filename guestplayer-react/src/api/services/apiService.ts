@@ -1,4 +1,3 @@
-import { environment } from "../../envionment";
 import { ApiError } from "../error/ApiError";
 import { StatusCode } from "../models/statusCodes";
 
@@ -6,20 +5,22 @@ export interface PathParams {
   [key: string]: string
 };
 
+export interface Headers {
+  [key: string]: string
+};
+
 const getEndpointUrl = (path: string, pathParams?: PathParams) => {
-  let url = environment.apiBaseUrl + path;
-  console.log(pathParams);
+  let url = process.env.REACT_APP_API_URL + path;
   if (pathParams) {
     Object.keys(pathParams).forEach(key => {
-      console.log(key)
       url = url.replace(`{${key}}`, pathParams[key]);
     });
   }
   return url;
 }
 
-export const post = async <TResponse>(path: string, body: any): Promise<TResponse> => {
-  const url = getEndpointUrl(path);
+export const post = async <TResponse>(path: string, body: any, pathParams?: PathParams): Promise<TResponse> => {
+  const url = getEndpointUrl(path, pathParams);
 
   const response = await fetch(url, {
     method: 'POST',
@@ -36,15 +37,22 @@ export const post = async <TResponse>(path: string, body: any): Promise<TRespons
   return await response.json() as TResponse;
 }
 
-export const get = async <TResponse>(path: string, pathParams: PathParams): Promise<TResponse> => {
+export const get = async <TResponse>(path: string, pathParams: PathParams, headers?: Headers): Promise<TResponse> => {
   const url = getEndpointUrl(path, pathParams);
-
-  const response = await fetch(url, {
+  const params: RequestInit = {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
     },
-  });
+  };
+
+  if (headers) {
+    Object.keys(headers).forEach(key => {
+      (params.headers as Record<string, string>)[key] = headers[key]
+    })
+  }
+
+  const response = await fetch(url, params);
 
   if (response.status !== StatusCode.Ok) {
     throw new ApiError(response.status, await response.json())

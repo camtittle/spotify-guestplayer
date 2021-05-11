@@ -10,6 +10,11 @@ export enum ButtonStyle {
   GreenPrimary
 }
 
+export enum ButtonSize {
+  Small = 'Small',
+  Large = 'Large'
+}
+
 interface ButtonProps {
   style: ButtonStyle;
   icon?: string;
@@ -18,6 +23,7 @@ interface ButtonProps {
   className?: string;
   disabled?: boolean;
   loading?: boolean;
+  size?: ButtonSize;
 }
 
 export const Button: React.FC<ButtonProps> = (props) => {
@@ -37,6 +43,12 @@ export const Button: React.FC<ButtonProps> = (props) => {
 
   if (props.loading) {
     classNames.push(styles.loading);
+  }
+
+  if (props.size) {
+    if (props.size === ButtonSize.Small) {
+      classNames.push(styles.small);
+    }
   }
 
   const img = props.icon ? <img src={props.icon} alt={props.iconAltText} className={styles.icon} /> : undefined;

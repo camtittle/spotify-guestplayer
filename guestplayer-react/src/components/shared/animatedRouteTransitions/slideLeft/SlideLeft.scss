@@ -1,18 +1,18 @@
-.fade-enter {
-    transform: translateX(100%);
+.slideLeft-enter {
+    transform: translate3d(100%, 0, 0);
     z-index: 1;
 }
   
-.fade-enter.fade-enter-active {
-    transform: translateX(0);
+.slideLeft-enter.slideLeft-enter-active {
+    transform: translate3d(0, 0, 0);
     transition: transform 250ms;
 }
 
-.fade-exit {
+.slideLeft-exit {
     opacity: 1;
 }
 
-.fade-exit.fade-exit-active {
+.slideLeft-exit.slideLeft-exit-active {
     opacity: 0;
     transition: opacity 250ms;
 }

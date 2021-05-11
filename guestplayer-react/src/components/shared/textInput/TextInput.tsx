@@ -2,10 +2,10 @@ import { ChangeEvent, Component, createRef } from 'react';
 import styles from './TextInput.module.scss';
 
 export interface TextInputProps {
-  className: string;
-  value: string;
+  className?: string;
+  value?: string;
   disabled?: boolean;
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
 }
 
 export class TextInput extends Component<TextInputProps> {
@@ -19,7 +19,9 @@ export class TextInput extends Component<TextInputProps> {
   }
 
   private onChange = (event: ChangeEvent<HTMLInputElement>) => {
-    this.props.onChange(event.target.value);
+    if (this.props.onChange) {
+      this.props.onChange(event.target.value);
+    }
   }
 
   render() {

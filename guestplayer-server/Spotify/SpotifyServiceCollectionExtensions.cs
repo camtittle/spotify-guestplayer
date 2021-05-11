@@ -20,14 +20,18 @@ namespace Spotify
             services.Configure<SpotifyConfig>(configSection);
             services.AddTransient<AuthHeaderHandler>();
 
-            services.AddRefitClient<ISpotifyClient>()
-                .ConfigureHttpClient(c => c.BaseAddress = new Uri(config.ApiBaseUrl))
+            services.AddRefitClient<ISpotifyAccountsClient>()
+                .ConfigureHttpClient(c => c.BaseAddress = new Uri(config.AccountsApiBaseUrl))
                 .AddHttpMessageHandler<AuthHeaderHandler>();
+
+            services.AddRefitClient<ISpotifyClient>()
+                .ConfigureHttpClient(c => c.BaseAddress = new Uri(config.ApiBaseUrl));
         }
 
         public static void AddSpotifyService(this IServiceCollection services)
         {
-            services.AddScoped<ISpotifyService, SpotifyService>();
+            services.AddScoped<IHostSpotifyService, HostSpotifyService>();
+            services.AddSingleton<IGuestSpotifyService, GuestSpotifyService>();
         }
     }
 }

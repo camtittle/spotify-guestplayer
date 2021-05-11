@@ -17,8 +17,8 @@
 .qrContainer {
     position: relative;
     text-align: center;
-    bottom: 0;
-    top: 6rem;
+    height: 1px;
+    transform: translateY(-5.5rem);
     z-index: 2;
 
     p {

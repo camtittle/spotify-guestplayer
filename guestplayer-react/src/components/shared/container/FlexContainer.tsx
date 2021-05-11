@@ -1,9 +1,8 @@
+import { MouseEventHandler } from 'react';
 import styles from './FlexContainer.module.scss';
 
-type ChildType = JSX.Element | boolean | null | undefined;
-
 interface FlexContainerProps {
-  children: ChildType[] | ChildType;
+  children: React.ReactNode;
   className?: string;
 }
 

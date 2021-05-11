@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { generateQrCode } from "../../../api/services/partyService";
+import { generateJoinUrl, generateQrCode } from "../../../api/services/partyService";
 import { PartyContext } from "../../../contexts/partyContext";
 import { ActionBar } from "../actionBar/ActionBar";
 import { Button, ButtonStyle } from "../button/Button";
@@ -13,6 +13,7 @@ export interface PartyHomeProps {
   primaryButton: {
     label: string;
     icon: string;
+    onClick: () => void;
   };
   secondaryButton: {
     label: string;
@@ -35,6 +36,23 @@ export default function PartyHome(props: PartyHomeProps) {
     }
   }, [party?.id, qrCanvasRef]);
 
+  const onClickShare = async () => {
+    if (!party) {
+      return;
+    }
+
+    const url = generateJoinUrl(party.id);
+    if (navigator.share !== undefined) {
+      // Web Share API is supported
+      await navigator.share({
+        title: 'Join ' + party.name + ' on GuestPlayer',
+        url: url
+      });
+    } else {
+      // Fallback
+    }
+  }
+
   return (
     <FlexContainer>
       <TitleBar showMenuButton={true}></TitleBar>
@@ -53,8 +71,8 @@ export default function PartyHome(props: PartyHomeProps) {
       <ActionBar>
         <div className={styles.actionBarContainer}>
 
-          <Button className={styles.topButton} style={ButtonStyle.WhitePrimary} icon={props.primaryButton.icon} onClick={() => { }} >{props.primaryButton.label}</Button>
-          <Button style={ButtonStyle.WhiteSecondary} icon={props.secondaryButton.icon} onClick={() => { }}>{props.secondaryButton.label}</Button>
+          <Button className={styles.topButton} style={ButtonStyle.WhitePrimary} icon={props.primaryButton.icon} onClick={props.primaryButton.onClick} >{props.primaryButton.label}</Button>
+          <Button style={ButtonStyle.WhiteSecondary} icon={props.secondaryButton.icon} onClick={onClickShare}>{props.secondaryButton.label}</Button>
 
         </div>
       </ActionBar>

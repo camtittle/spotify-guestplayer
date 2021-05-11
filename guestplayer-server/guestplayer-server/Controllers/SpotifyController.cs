@@ -1,4 +1,5 @@
-﻿using Domain.Interfaces.Services;
+﻿using Domain.Enums;
+using Domain.Interfaces.Services;
 using guestplayer_server.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,11 +14,13 @@ namespace guestplayer_server.Controllers
     [ApiController]
     public class SpotifyController : ControllerBase
     {
-        private readonly ISpotifyService _spotifyService;
+        private readonly IHostSpotifyService _hostSpotifyService;
+        private readonly IGuestSpotifyService _guestSpotifyService;
 
-        public SpotifyController(ISpotifyService spotifyService)
+        public SpotifyController(IHostSpotifyService hostSpotifyService, IGuestSpotifyService guestSpotifyService)
         {
-            _spotifyService = spotifyService;
+            _hostSpotifyService = hostSpotifyService;
+            _guestSpotifyService = guestSpotifyService;
         }
 
         [HttpPost("token")]
@@ -30,7 +33,7 @@ namespace guestplayer_server.Controllers
                 return BadRequest(ModelState.ValidationState);
             }
 
-            var tokens = await _spotifyService.GetAccessToken(request.Code);
+            var tokens = await _hostSpotifyService.GetAccessToken(request.Code);
 
             var response = new GetSpotifyAccessTokenResponse
             {
@@ -41,6 +44,33 @@ namespace guestplayer_server.Controllers
 
             return Ok(response);
         }
+
+        [HttpGet("tracks/{searchTerm}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(Role.Guest)]
+        public async Task<ActionResult<TrackResponse>> SearchTracks(string searchTerm)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState.ValidationState);
+            }
+
+            var tracks = await _guestSpotifyService.SearchTracks(searchTerm);
+
+            var response = tracks.Select(track => new TrackResponse()
+            {
+                Id = track.Id,
+                Title = track.Title,
+                Artist = track.Artist,
+                ArtworkUrl = track.ArtworkUrl,
+                Album = track.Album,
+                DurationMs = track.DurationMs
+            });
+
+            return Ok(response);
+        }
+
 
     }
 }

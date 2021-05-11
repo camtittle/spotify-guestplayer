@@ -2,6 +2,7 @@ import BackButton from '../backButton/BackButton';
 import styles from './TitleBar.module.scss';
 
 interface TitleBarProps {
+  className?: string;
   showBackButton?: boolean;
   showMenuButton?: boolean;
   onClickBack?: () => void
@@ -9,8 +10,10 @@ interface TitleBarProps {
 
 export const TitleBar = (props: TitleBarProps) => {
   
+  const classNames = [styles.titleBar, props.className].join(' ');
+
   return (
-    <div className={styles.titleBar}>
+    <div className={classNames}>
       {props.showBackButton &&
         <BackButton onClick={props.onClickBack}></BackButton>
       }
@@ -21,7 +24,7 @@ export const TitleBar = (props: TitleBarProps) => {
       {!props.showBackButton && !props.showMenuButton &&
         <div className={styles.spacer}></div>
       }
-      <div>GuestPlayer</div>
+      <div className={styles.title}>GuestPlayer</div>
       <div className={styles.spacer}></div>
     </div>
   )

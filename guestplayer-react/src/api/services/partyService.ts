@@ -1,7 +1,7 @@
 import { Party } from "../../models/Party";
 import { SpotifyCredentials } from "../../models/SpotifyCredentials";
 import { CreatePartyRequest } from "../models/createPartyRequest";
-import { CreatePartyResponse } from "../models/createPartyResponse";
+import { PartyResponse } from "../models/partyResponse";
 import * as ApiService from './apiService';
 import qrCode from 'qrcode';
 import { GetPartyResponse } from "../models/getPartyResponse";
@@ -9,7 +9,8 @@ import { PartySummary } from "../../models/PartySummary";
 
 enum Endpoint {
   CreateParty = '/party/create',
-  GetParty = '/party/{id}'
+  GetParty = '/party/{id}',
+  JoinParty = '/party/{id}/join'
 };
 
 export const createParty = async (name: string, spotifyCredentials: SpotifyCredentials): Promise<Party> => {
@@ -22,13 +23,14 @@ export const createParty = async (name: string, spotifyCredentials: SpotifyCrede
     }
   };
 
-  const response = await ApiService.post<CreatePartyResponse>(Endpoint.CreateParty, request);
+  const response = await ApiService.post<PartyResponse>(Endpoint.CreateParty, request);
 
   return {
     id: response.id,
     name: response.name,
     guestCount: response.guestCount,
-    token: response.token
+    token: response.token,
+    role: response.role
   };
 };
 
@@ -42,6 +44,22 @@ export const getPartySummary = async (partyId: string): Promise<PartySummary> =>
   return {
     id: response.id,
     name: response.name
+  };
+}
+
+export const joinParty = async (partyId: string): Promise<Party> => {
+  const params = {
+    id: partyId
+  };
+
+  const response = await ApiService.post<PartyResponse>(Endpoint.JoinParty, undefined, params);
+
+  return {
+    id: response.id,
+    name: response.name,
+    guestCount: response.guestCount,
+    token: response.token,
+    role: response.role
   };
 }
 

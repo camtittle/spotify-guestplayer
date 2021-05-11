@@ -1,5 +1,9 @@
 @import '_colours';
 
+.container {
+    overflow-y: hidden;
+}
+
 .header {
     color: $spotify_green;
     font-size: 2.5em;

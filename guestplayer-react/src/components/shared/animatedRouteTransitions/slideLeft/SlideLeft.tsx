@@ -15,7 +15,7 @@ export const SlideLeft = (props: SlideLeftProps) => {
     <TransitionGroup>
       <CSSTransition
         key={key}
-        classNames="fade"
+        classNames="slideLeft"
         timeout={300}
       >
         <Switch location={location}>

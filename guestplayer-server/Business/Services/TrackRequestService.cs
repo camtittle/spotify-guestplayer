@@ -12,10 +12,10 @@ namespace Business.Services
 {
     public class TrackRequestService : ITrackRequestService
     {
-        private readonly ISpotifyService _spotifyService;
+        private readonly IGuestSpotifyService _spotifyService;
         private readonly IPartyRepository _partyRepository;
 
-        public TrackRequestService(ISpotifyService spotifyService, IPartyRepository partyRepository)
+        public TrackRequestService(IGuestSpotifyService spotifyService, IPartyRepository partyRepository)
         {
             _spotifyService = spotifyService;
             _partyRepository = partyRepository;
@@ -28,8 +28,6 @@ namespace Business.Services
                 throw new ArgumentNullException(nameof(createParams.SpotifyTrackId));
             }
 
-            // TODO refresh token
-            _spotifyService.SetAccessToken(createParams.Party.SpotifyCredentials.AccessToken);
             var track = await _spotifyService.GetTrack(createParams.SpotifyTrackId);
 
             var trackRequest = new TrackRequest()

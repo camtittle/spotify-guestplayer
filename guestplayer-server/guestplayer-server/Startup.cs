@@ -37,7 +37,7 @@ namespace guestplayer_server
             services.AddCors(
                 options =>
                 {
-                    options.AddDefaultPolicy(builder => builder.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader());
+                    options.AddDefaultPolicy(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
                 });
 
 

@@ -7,13 +7,12 @@ using System.Threading.Tasks;
 
 namespace Spotify.Client
 {
-    interface ISpotifyClient
+    public interface ISpotifyClient
     {
-        [Post("/token")]
-        Task<GetAccessTokenResponse> GetAccessToken([Body(BodySerializationMethod.UrlEncoded)] GetAccessTokenRequest request);
-
-
         [Get("/tracks/{id}")]
-        Task<TrackResponse> GetTrack(string id, [Authorize("Bearer")] string token);
+        public Task<TrackResponse> GetTrack(string id, [Authorize("Bearer")] string token);
+
+        [Get("/search")]
+        public Task<SearchResponse> SearchTracks(string q, string type, [Authorize("Bearer")] string token);
     }
 }

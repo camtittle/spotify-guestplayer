@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace Spotify.Client.Models
 {
-    class GetAccessTokenRequest
+    public class GetAccessTokenRequest
     {
         [AliasAs("grant_type")]
         public string GrantType { get; set; }
