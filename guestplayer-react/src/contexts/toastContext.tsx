@@ -3,11 +3,13 @@ import Toast, { ToastState } from "../components/shared/toast/Toast";
 
 interface ToastContextType {
   toastState: ToastState;
-  setToastState: (state: ToastState) => void;
+  label: string;
+  setToastState: (state: ToastState, label: string) => void;
 }
 
 export const ToastContext = createContext<ToastContextType>({
   toastState: ToastState.Disabled,
+  label: '',
   setToastState: () => {}
 });
 
@@ -19,9 +21,10 @@ export const ToastContextProvider = ({ children }: ToastContextProviderProps) =>
   
   const [toastContext, setToastContext] = useState<ToastContextType>({
     toastState: ToastState.Disabled,
-    setToastState: (toastState: ToastState) => {
+    label: '',
+    setToastState: (toastState: ToastState, label: string) => {
       setToastContext((previous) => {
-        return { ...previous, toastState: toastState, }
+        return { ...previous, toastState, label}
       });
     }
   });
@@ -29,7 +32,7 @@ export const ToastContextProvider = ({ children }: ToastContextProviderProps) =>
   return (
     <ToastContext.Provider value={toastContext}>
       {children}
-      <Toast />
+      <Toast state={toastContext.toastState} label={toastContext.label} />
     </ToastContext.Provider>
   );
 }

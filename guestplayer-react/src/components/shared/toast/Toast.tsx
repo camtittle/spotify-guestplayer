@@ -1,5 +1,6 @@
-import { Component, useEffect, useState } from 'react';
+import { Component, useEffect, useRef, useState } from 'react';
 import { CSSTransition } from 'react-transition-group';
+import LoadingSpinner from '../loadingSpinner/LoadingSpinner';
 import styles from './Toast.module.scss';
 
 export enum ToastState {
@@ -10,26 +11,43 @@ export enum ToastState {
 }
 
 interface ToastProps {
+  state: ToastState,
+  label: string
 }
 
 const Toast = (props: ToastProps) => {
 
   const [visible, setVisible] = useState(false);
+  let timeoutRef = useRef<NodeJS.Timeout>();
 
-  const timeout = 5000;
+  const duration = 4000;
 
   useEffect(() => {
-    if (props.state === ToastState.Error || props.state === ToastState.Success) {
-      setVisible(true);
-      setTimeout(() => {
+    if (props.state === ToastState.Error || props.state === ToastState.Success || props.state === ToastState.Loading) {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      timeoutRef.current = setTimeout(() => {
         setVisible(false);
-      }, timeout);
-    } else if (props.state === ToastState.Loading) {
+      }, duration);
       setVisible(true);
     } else if (props.state === ToastState.Disabled) {
       setVisible(false);
     }
   }, [props.state]);
+
+  const classNames = [styles.toast];
+  switch (props.state) {
+    case ToastState.Loading:
+      classNames.push(styles.loading);
+      break;
+    case ToastState.Error:
+      classNames.push(styles.error);
+      break;
+    case ToastState.Success:
+      classNames.push(styles.success);
+      break;
+  }
 
   return (
     <CSSTransition in={visible} timeout={300} mountOnEnter unmountOnExit classNames={{
@@ -38,8 +56,18 @@ const Toast = (props: ToastProps) => {
       exit: styles.exit,
       exitActive: styles.exitActive
     }}>
-      <div className={styles.toast}>
-        Toast
+      <div className={classNames.join(' ')}>
+        <span className={styles.iconContainer}>
+          {props.state === ToastState.Loading &&
+            <LoadingSpinner color="white" className={styles.loadingSpinner} />
+          }
+
+          {props.state === ToastState.Success &&
+            <span className={styles.tickIcon}></span>
+          }
+
+        </span>
+        <span>{props.label}</span>
       </div>
     </CSSTransition>
   )

@@ -1,28 +1,36 @@
-import React, { Component, Fragment, MouseEventHandler } from 'react';
+import React, { Component, Fragment, MouseEventHandler, useContext } from 'react';
 import { CSSTransition } from 'react-transition-group';
+import { requestTrack } from '../../../../../api/services/requestService';
+import { ToastContext } from '../../../../../contexts/toastContext';
+import { Party } from '../../../../../models/Party';
 import { Track } from '../../../../../models/Track';
 import { Button, ButtonSize, ButtonStyle } from '../../../../shared/button/Button';
 import FlexContainer from '../../../../shared/container/FlexContainer';
-import Toast, { ToastState } from '../../../../shared/toast/Toast';
+import { ToastState } from '../../../../shared/toast/Toast';
 import TrackListItem from '../../../../shared/trackListItem/TrackListItem';
 import styles from './ConfirmRequestDialog.module.scss';
 
 interface ConfirmRequestState {
   visible: boolean;
-  toastState: ToastState;
   track: Track;
 }
 
-export class ConfirmRequestDialog extends Component<{}, ConfirmRequestState> {
+interface ConfirmRequestProps {
+  party: Party;
+}
+
+export class ConfirmRequestDialog extends Component<ConfirmRequestProps, ConfirmRequestState> {
+
+  static contextType = ToastContext;
+  context!: React.ContextType<typeof ToastContext>;
 
   dialogRef: React.RefObject<HTMLDivElement>;
 
-  constructor(props: any) {
+  constructor(props: ConfirmRequestProps) {
     super(props);
     this.state = {
       visible: false,
-      track: {} as Track,
-      toastState: ToastState.Disabled
+      track: {} as Track
     };
 
     this.dialogRef = React.createRef<HTMLDivElement>();
@@ -47,15 +55,18 @@ export class ConfirmRequestDialog extends Component<{}, ConfirmRequestState> {
     }
 
     this.setState({
-      toastState: ToastState.Loading,
       visible: false
     });
 
+    this.context.setToastState(ToastState.Loading, 'Requesting track');
+
     setTimeout(() => {
-      this.setState({
-        toastState: ToastState.Success
-      });
-    }, 100);
+      requestTrack(this.state.track.spotifyId, this.props.party.token).then(() => {
+        this.context.setToastState(ToastState.Success, 'Track requested');
+      }).catch(() => {
+        this.context.setToastState(ToastState.Error, 'Something went wrong');
+      })
+    }, 1000);
     
     console.log('confirm ' + this.state.track.title);
   }

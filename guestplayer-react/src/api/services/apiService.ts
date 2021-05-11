@@ -9,6 +9,13 @@ export interface Headers {
   [key: string]: string
 };
 
+export const getBearerTokenHeaders = (bearerToken: string) => {
+  return {
+    Authorization: `Bearer ${bearerToken}`
+  };
+}
+
+
 const getEndpointUrl = (path: string, pathParams?: PathParams) => {
   let url = process.env.REACT_APP_API_URL + path;
   if (pathParams) {
@@ -19,16 +26,24 @@ const getEndpointUrl = (path: string, pathParams?: PathParams) => {
   return url;
 }
 
-export const post = async <TResponse>(path: string, body: any, pathParams?: PathParams): Promise<TResponse> => {
+export const post = async <TResponse>(path: string, body: any, pathParams?: PathParams, headers?: Headers): Promise<TResponse> => {
   const url = getEndpointUrl(path, pathParams);
 
-  const response = await fetch(url, {
+  const params: RequestInit = {
     method: 'POST',
     body: JSON.stringify(body),
     headers: {
       'Content-Type': 'application/json',
-    },
-  });
+    }
+  }
+
+  if (headers) {
+    Object.keys(headers).forEach(key => {
+      (params.headers as Record<string, string>)[key] = headers[key]
+    })
+  }
+
+  const response = await fetch(url, params);
 
   if (response.status !== StatusCode.Ok) {
     throw new ApiError(response.status, await response.json())

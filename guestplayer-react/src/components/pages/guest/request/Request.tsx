@@ -82,7 +82,7 @@ const Request = () => {
         <TrackList tracks={tracks} onClickTrack={onClickTrack} className={styles.trackList} />
       </div>
 
-      <ConfirmRequestDialog ref={confirmRequestDialogRef} />
+      <ConfirmRequestDialog ref={confirmRequestDialogRef} party={party} />
     </FlexContainer>
   );
 };

@@ -17,7 +17,6 @@ import { SlideLeft } from './components/shared/animatedRouteTransitions/slideLef
 import { SpotifyCredentials } from './models/SpotifyCredentials';
 import GuestHome from './components/pages/guest/home/GuestHome';
 import Request from './components/pages/guest/request/Request';
-import Toast from './components/shared/toast/Toast';
 import { ToastContextProvider } from './contexts/toastContext';
 
 export default function App() {
@@ -61,9 +60,9 @@ export default function App() {
 
   return (
     <PartyContext.Provider value={partyContext}>
-      <ToastContextProvider>
-        <Router>
-          <div className={styles.App}>
+      <Router>
+        <div className={styles.App}>
+          <ToastContextProvider>
             <Switch>
 
               <Route path="*">
@@ -100,9 +99,9 @@ export default function App() {
               </Route>
 
             </Switch>
-          </div>
-        </Router>
-      </ToastContextProvider>
+            </ToastContextProvider>
+        </div>
+      </Router>
     </PartyContext.Provider>
 
   );
