@@ -1,10 +1,14 @@
 @import '_colours';
 
+.container {
+    position: relative;
+}
+
 .textInput {
     border: solid #c9c9c9 1px;
     border-radius: 2rem;
     background-color: transparent;
-    padding: 0.8rem 1.5rem;
+    padding: 0.8rem 2.6rem 0.8rem 1.5rem;
     color: $spotify_green;
     font-size: 1rem;
     width: 100%;
@@ -15,4 +19,47 @@
         border-color: $grey-50;
         color: $grey-50;
     }
+}
+
+.clearButton {
+    position: absolute;
+    right: 17px;
+    top: 15px;
+    width: 17px;
+    height: 17px;
+    background-image: url('../../../assets/img/cancel.svg');
+    background-size: contain;
+    background-color: transparent;
+    border: none;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.3s;
+
+    &:hover {
+        background-image: url('../../../assets/img/cancel-white.svg');
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }
+}
+
+.withIcon {
+    padding-left: 2.9rem;
+}
+
+.icon {
+    position: absolute;
+    left: 17px;
+    top: 15px;
+    width: 17px;
+    height: 17px;
+    background-size: contain;
+    background-color: transparent;
+    background-repeat: no-repeat;
+}
+
+.visible {
+    opacity: 1;
 }

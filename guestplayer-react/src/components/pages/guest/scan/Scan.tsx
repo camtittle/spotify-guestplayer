@@ -1,20 +1,23 @@
 import { ActionBar } from '../../../shared/actionBar/ActionBar';
 import styles from './Scan.module.scss';
 import QrReader from 'react-qr-reader';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import FlexContainer from '../../../shared/container/FlexContainer';
 import BackButton from '../../../shared/backButton/BackButton';
 import { useHistory } from 'react-router';
 
 export default function Scan(): JSX.Element {
 
-  const [qrState, setQrState] = useState('No result');
   const history = useHistory();
 
   const handleScan = (data: any) => {
     if (data) {
       console.log(data);
-      setQrState(data);
+      const parts = data.split('/join/');
+      if (parts.length === 2) {
+        const partyId = parts[1];
+        history.push(`/join/${partyId}`);
+      }
     }
   }
 

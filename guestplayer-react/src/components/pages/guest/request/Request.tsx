@@ -10,6 +10,7 @@ import { throttle } from 'throttle-debounce';
 import { PartyContext } from '../../../../contexts/partyContext';
 import { useHistory } from 'react-router';
 import { ConfirmRequestDialog } from './confirmRequestDialog/ConfirmRequestDialog';
+import Search from '../../../../assets/img/search.svg';
 
 const Request = () => {
 
@@ -78,7 +79,7 @@ const Request = () => {
       <TitleBar showBackButton />
 
       <div className={styles.container}>
-        <TextInput value={searchValue} onChange={onChangeSearchValue} className={styles.textInput} ref={textInputRef} />
+        <TextInput value={searchValue} onChange={onChangeSearchValue} className={styles.textInput} ref={textInputRef} icon={Search} />
         <TrackList tracks={tracks} onClickTrack={onClickTrack} className={styles.trackList} />
       </div>
 

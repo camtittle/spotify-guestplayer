@@ -70,5 +70,5 @@ export const generateJoinUrl = (partyId: string): string => {
 
 export const generateQrCode = async (partyId: string): Promise<string> => {
   const joinUrl = generateJoinUrl(partyId);
-  return await qrCode.toDataURL(joinUrl, { width: 200 });
+  return await qrCode.toDataURL(joinUrl, { width: 200, errorCorrectionLevel: 'H' });
 };

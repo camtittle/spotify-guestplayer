@@ -1,4 +1,4 @@
-import { ChangeEvent, Component, createRef } from 'react';
+import { ChangeEvent, Component, createRef, Fragment } from 'react';
 import styles from './TextInput.module.scss';
 
 export interface TextInputProps {
@@ -6,6 +6,7 @@ export interface TextInputProps {
   value?: string;
   disabled?: boolean;
   onChange?: (value: string) => void;
+  icon?: string;
 }
 
 export class TextInput extends Component<TextInputProps> {
@@ -24,11 +25,36 @@ export class TextInput extends Component<TextInputProps> {
     }
   }
 
+  private onClickClear = () => {
+    if (this.props.onChange) {
+      this.props.onChange('');
+    }
+    this.focus();
+  }
+
   render() {
-    const classNames = [styles.textInput, this.props.className];
+    const classNames = [styles.container, this.props.className];
+    const buttonClasses = [styles.clearButton];
+
+    if (this.props.value) {
+      buttonClasses.push(styles.visible);
+    }
+
+    const inputClasses = [styles.textInput];
+    if (this.props.icon) {
+      inputClasses.push(styles.withIcon);
+    }
+
+    let iconStyle = {
+      backgroundImage: `url(${this.props.icon})`
+    };
 
     return (
-      <input type="text" className={classNames.join(' ')} value={this.props.value} onChange={this.onChange} ref={this.inputRef} disabled={this.props.disabled}/>
+      <div className={classNames.join(' ')}>
+        <input type="text" className={inputClasses.join(' ')} value={this.props.value} onChange={this.onChange} ref={this.inputRef} disabled={this.props.disabled} />
+        <button className={buttonClasses.join(' ')} onClick={this.onClickClear}></button>
+        <div className={styles.icon} style={iconStyle}></div>
+      </div>
     );
 
   }

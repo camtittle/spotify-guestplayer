@@ -9,7 +9,7 @@ export interface Headers {
   [key: string]: string
 };
 
-export const getBearerTokenHeaders = (bearerToken: string) => {
+export  const getBearerTokenHeaders = (bearerToken: string) => {
   return {
     Authorization: `Bearer ${bearerToken}`
   };
