@@ -43,3 +43,9 @@
 .qrCode>img.loaded {
     opacity: 1;
 }
+
+.partyIdInput {
+    position: absolute;
+    top: -100px;
+    opacity: 0;
+}

@@ -20,7 +20,7 @@ const Toast = (props: ToastProps) => {
   const [visible, setVisible] = useState(false);
   let timeoutRef = useRef<NodeJS.Timeout>();
 
-  const duration = 4000;
+  const duration = 5000;
 
   useEffect(() => {
     if (props.state === ToastState.Error || props.state === ToastState.Success || props.state === ToastState.Loading) {
@@ -66,8 +66,12 @@ const Toast = (props: ToastProps) => {
             <span className={styles.tickIcon}></span>
           }
 
+          {props.state === ToastState.Error &&
+            <span className={styles.errorIcon}></span>
+          }
+
         </span>
-        <span>{props.label}</span>
+        <span className={styles.label}>{props.label}</span>
       </div>
     </CSSTransition>
   )

@@ -11,5 +11,9 @@ namespace Spotify.Client
     {
         [Post("/token")]
         public Task<GetAccessTokenResponse> GetAccessToken([Body(BodySerializationMethod.UrlEncoded)] GetAccessTokenRequest request);
+
+
+        [Post("/token")]
+        public Task<RefreshAccessTokenResponse> RefreshAccessToken([Body(BodySerializationMethod.UrlEncoded)] RefreshAccessTokenRequest request);
     }
 }

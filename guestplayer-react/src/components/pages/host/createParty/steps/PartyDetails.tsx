@@ -16,6 +16,7 @@ export const PartyDetails = (props: PartyDetailsProps): JSX.Element => {
   const history = useHistory();
   const nameInputRef = useRef<TextInput>(null);
   const { setParty, spotifyCredentials } = useContext(PartyContext);
+  const maxNameLength = 30;
 
   useEffect(() => {
     setTimeout(() => {
@@ -30,6 +31,9 @@ export const PartyDetails = (props: PartyDetailsProps): JSX.Element => {
   }, [spotifyCredentials]);
 
   const onInputChange = (value: string) => {
+    if (value && value.length > maxNameLength) {
+      return;
+    }
     setName(value);
   }
 

@@ -1,0 +1,66 @@
+@import '_colours';
+
+.container {
+    justify-content: center;
+    pointer-events: none;
+    padding: 0 24px;
+
+    * {
+        pointer-events: initial;
+    }
+}
+
+.dialog {
+    min-width: 200px;
+    background-color: $grey-90;
+    z-index: 9;
+    border-radius: 6px;
+    padding: 22px;
+    box-shadow: rgba(0, 0, 0, 0.3) 0px 4px 6px;
+
+    .title {
+        color: $grey-30;
+        text-align: center;
+        font-weight: 500;
+    }
+
+    .body {
+        font-size: 14px;
+        margin-top: 22px;
+    }
+
+    .buttonsContainer {
+        display: flex;
+        margin-top: 30px;
+
+        >:first-child {
+            margin-right: 16px;
+        }
+    }
+}
+
+.enter {
+    transform: scale3d(0.9, 0.9, 1);
+    opacity: 0;
+    z-index: 99;
+}
+
+.enterActive {
+    transform: scale3d(1, 1, 1);
+    opacity: 1;
+    transition: transform 0.3s, opacity 0.3s;
+    z-index: 99;
+}
+
+.exit {
+    transform: scale3d(1, 1, 1);
+    opacity: 1;
+    z-index: 98;
+}
+
+.exitActive {
+    transition: transform 0.3s, opacity 0.3s;
+    transform: scale3d(0.9, 0.9, 1);
+    opacity: 0;
+    z-index: 98;
+}

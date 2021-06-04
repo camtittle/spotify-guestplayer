@@ -63,5 +63,124 @@ namespace guestplayer_server.Controllers
             }
         }
 
+        [HttpGet("")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(Role.Host)]
+        public async Task<ActionResult> GetRequests(int? limit)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState.ValidationState);
+            }
+
+            var partyId = HttpContext.GetPartyId();
+
+            var trackRequests = await _trackRequestService.GetTrackRequests(partyId);
+
+            var response = trackRequests.Select(x => new TrackRequestResponse()
+            {
+                Id = x.Id,
+                SpotifyTrackId = x.SpotifyTrackId,
+                Title = x.Title,
+                Artist = x.Artist,
+                ArtworkUrl = x.ArtworkUrl,
+                Album = x.Album,
+                CreatedAt = x.CreatedAt
+            });
+
+            return Ok(response);
+        }
+
+        [HttpGet("count")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(Role.Host)]
+        public async Task<ActionResult<GetRequestCountResponse>> GetRequestCount()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState.ValidationState);
+            }
+
+            var partyId = HttpContext.GetPartyId();
+
+            var trackRequestCount = await _trackRequestService.GetTrackRequestCount(partyId);
+
+            var response = new GetRequestCountResponse()
+            {
+                Count = trackRequestCount
+            };
+
+            return Ok(response);
+        }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(Role.Host)]
+        public async Task<ActionResult> DeleteRequest(string id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState.ValidationState);
+            }
+
+            var hostPartyId = HttpContext.GetPartyId();
+
+            await _trackRequestService.DeleteTrackRequest(hostPartyId, id);
+
+            return NoContent();
+        }
+
+        [HttpPost("{id}/play")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(Role.Host)]
+        public async Task<ActionResult> PlayRequest(string id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState.ValidationState);
+            }
+
+            var hostPartyId = HttpContext.GetPartyId();
+
+            try
+            {
+                await _trackRequestService.AcceptTrackRequest(hostPartyId, id, PlayType.PlayNow);
+            }
+            catch (ActivePlayerDeviceNotFound)
+            {
+                return BadRequest(new ErrorResponse(ErrorCodes.ACTIVE_PLAYER_DEVICE_NOT_FOUND));
+            }
+
+            return NoContent();
+        }
+
+        [HttpPost("{id}/queue")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(Role.Host)]
+        public async Task<ActionResult> QueueRequest(string id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState.ValidationState);
+            }
+
+            var hostPartyId = HttpContext.GetPartyId();
+
+            try
+            {
+                await _trackRequestService.AcceptTrackRequest(hostPartyId, id, PlayType.AddToQueue);
+            } catch (ActivePlayerDeviceNotFound)
+            {
+                return BadRequest(new ErrorResponse(ErrorCodes.ACTIVE_PLAYER_DEVICE_NOT_FOUND));
+            }
+
+            return NoContent();
+        }
+
     }
 }

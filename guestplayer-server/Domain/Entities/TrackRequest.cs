@@ -12,5 +12,6 @@ namespace Domain.Entities
         public string Artist { get; set; }
         public string ArtworkUrl { get; set; }
         public string Album { get; set; }
+        public DateTime? AcceptedAt { get; set; }
     }
 }

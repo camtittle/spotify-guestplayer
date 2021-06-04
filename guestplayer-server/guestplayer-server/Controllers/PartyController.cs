@@ -89,6 +89,45 @@ namespace guestplayer_server.Controllers
             return Ok(response);
         }
 
+        [HttpPost("leave")]
+        [Authorize(Role.Guest)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<ActionResult> LeaveParty()
+        {
+            var partyId = HttpContext.GetPartyId();
+            var userId = HttpContext.GetUserId();
+
+            var party = await _partyService.GetParty(partyId);
+
+            if (party == null)
+            {
+                return NotFound();
+            }
+
+            await _partyService.LeaveParty(userId, party);
+
+            return NoContent();
+        }
+
+        [HttpDelete("")]
+        [Authorize(Role.Host)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<ActionResult> EndParty()
+        {
+            var partyId = HttpContext.GetPartyId();
+
+            var party = await _partyService.GetParty(partyId);
+
+            if (party == null)
+            {
+                return NoContent();
+            }
+
+            await _partyService.EndParty(partyId);
+
+            return NoContent();
+        }
+
         [HttpPost("{id}/join")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

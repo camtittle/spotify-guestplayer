@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { Fragment, useContext, useEffect, useRef } from "react";
 import { useHistory } from "react-router";
 import { PartyContext } from "../../../../contexts/partyContext";
 import PartyHome from "../../../shared/partyHome/PartyHome";
@@ -6,11 +6,16 @@ import styles from './GuestHome.module.scss';
 import MusicalNotes from '../../../../assets/img/musical-note.svg';
 import Share from '../../../../assets/img/share.svg';
 import { Role } from "../../../../api/models/role";
+import { MenuItem } from "../../../shared/titleBar/menu/Menu";
+import LogoutIcon from '../../../../assets/img/logout.svg';
+import Dialog from "../../../shared/dialog/Dialog";
+import { leaveParty } from "../../../../api/services/partyService";
 
 export default function GuestHome() {
 
-  const { party, partyLoaded } = useContext(PartyContext);
+  const { party, partyLoaded, setParty } = useContext(PartyContext);
   const history = useHistory();
+  const leavePartyDialogRef = useRef<Dialog>(null);
 
   useEffect(() => {
     if (partyLoaded) {
@@ -50,7 +55,39 @@ export default function GuestHome() {
     icon: Share
   };
 
+  const menuItems: MenuItem[] = [
+    {
+      label: 'Leave party',
+      icon: LogoutIcon,
+      onClick: () => {
+        leavePartyDialogRef.current?.show();
+      }
+    }
+  ];
+
+  const onConfirmLeaveParty = async () => {
+    if (!party) {
+      throw new Error('Cannot end party - party context is null');
+    }
+
+    leavePartyDialogRef.current?.hide();
+    setParty(undefined);
+    await leaveParty(party.token);
+  }
+
   return (
-    <PartyHome header={header} qrLabel={qrLabel} primaryButton={primaryButton} secondaryButton={secondaryButton}></PartyHome>
+    <Fragment>
+      <PartyHome header={header} qrLabel={qrLabel} primaryButton={primaryButton} secondaryButton={secondaryButton} menuItems={menuItems}></PartyHome>
+      
+      <Dialog
+        title="Leave party?"
+        body="You will no longer be able to request songs at this party."
+        primaryLabel="Leave party"
+        onClickPrimary={onConfirmLeaveParty}
+        secondaryLabel="Cancel"
+        onClickSecondary={() => leavePartyDialogRef.current?.hide()}
+        ref={leavePartyDialogRef}
+      />
+    </Fragment>
   )
 }

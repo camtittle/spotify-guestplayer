@@ -8,8 +8,10 @@
 
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     padding: 0 1rem;
+    box-shadow: rgba(23, 23, 23, 0.52) 0px 3px 6px;
+    z-index: 4;
 }
 
 .title {
@@ -20,4 +22,9 @@
 
 .spacer {
     width: 1rem;
+}
+
+.menuButton, .backButton {
+    position: absolute;
+    left: 12px;
 }

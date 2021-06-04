@@ -15,7 +15,8 @@ namespace guestplayer_server.Helpers
     {
         private readonly AuthConfig _authConfig;
 
-        private const int EXPIRY_HOURS = 24;
+        // TODO change expiry to 24 hours
+        private const int EXPIRY_HOURS = 1000;
 
         public JwtService(IOptions<AuthConfig> authConfig)
         {
@@ -24,7 +25,6 @@ namespace guestplayer_server.Helpers
 
         public string generateJwt(string partyId, string role)
         {
-            // generate token that is valid for 7 days
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_authConfig.Secret);
             var claims = new[] { 
@@ -40,6 +40,22 @@ namespace guestplayer_server.Helpers
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
+        }
+
+        public JwtSecurityToken ValidateJwt(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_authConfig.Secret);
+            tokenHandler.ValidateToken(token, new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ClockSkew = TimeSpan.Zero
+            }, out SecurityToken validatedToken);
+
+            return (JwtSecurityToken)validatedToken;
         }
     }
 }

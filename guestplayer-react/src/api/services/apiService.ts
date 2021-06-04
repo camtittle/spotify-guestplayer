@@ -1,3 +1,4 @@
+import axios, { AxiosResponse } from "axios";
 import { ApiError } from "../error/ApiError";
 import { StatusCode } from "../models/statusCodes";
 
@@ -15,9 +16,13 @@ export  const getBearerTokenHeaders = (bearerToken: string) => {
   };
 }
 
+const isSuccess = (response: AxiosResponse<any>): boolean => {
+  return response.status === StatusCode.Ok || response.status === StatusCode.NoContent
+}
+
 
 const getEndpointUrl = (path: string, pathParams?: PathParams) => {
-  let url = process.env.REACT_APP_API_URL + path;
+  let url = process.env.REACT_APP_API_URL + '/api' + path;
   if (pathParams) {
     Object.keys(pathParams).forEach(key => {
       url = url.replace(`{${key}}`, pathParams[key]);
@@ -29,33 +34,30 @@ const getEndpointUrl = (path: string, pathParams?: PathParams) => {
 export const post = async <TResponse>(path: string, body: any, pathParams?: PathParams, headers?: Headers): Promise<TResponse> => {
   const url = getEndpointUrl(path, pathParams);
 
-  const params: RequestInit = {
-    method: 'POST',
-    body: JSON.stringify(body),
+  const params = {
     headers: {
       'Content-Type': 'application/json',
     }
-  }
+  };
 
   if (headers) {
     Object.keys(headers).forEach(key => {
       (params.headers as Record<string, string>)[key] = headers[key]
     })
   }
+  
+  const response = await axios.post(url, body, params);
 
-  const response = await fetch(url, params);
-
-  if (response.status !== StatusCode.Ok) {
-    throw new ApiError(response.status, await response.json())
+  if (!isSuccess(response)) {
+    throw new ApiError(response.status, response.data)
   }
-
-  return await response.json() as TResponse;
+  
+  return response.data;
 }
 
-export const get = async <TResponse>(path: string, pathParams: PathParams, headers?: Headers): Promise<TResponse> => {
+export const get = async <TResponse>(path: string, pathParams?: PathParams, headers?: Headers): Promise<TResponse> => {
   const url = getEndpointUrl(path, pathParams);
-  const params: RequestInit = {
-    method: 'GET',
+  const params = {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -67,11 +69,34 @@ export const get = async <TResponse>(path: string, pathParams: PathParams, heade
     })
   }
 
-  const response = await fetch(url, params);
+  const response = await axios.get<TResponse>(url, params);
 
-  if (response.status !== StatusCode.Ok) {
-    throw new ApiError(response.status, await response.json())
+  if (!isSuccess(response)) {
+    throw new ApiError(response.status, response.data)
   }
 
-  return await response.json() as TResponse;
+  return response.data;
+};
+
+export const del = async <TResponse>(path: string, pathParams?: PathParams, headers?: Headers): Promise<TResponse | undefined> => {
+  const url = getEndpointUrl(path, pathParams);
+  const params = {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  if (headers) {
+    Object.keys(headers).forEach(key => {
+      (params.headers as Record<string, string>)[key] = headers[key]
+    })
+  }
+
+  const response = await axios.delete(url, params);
+
+  if (!isSuccess(response)) {
+    throw new ApiError(response.status, response.data)
+  }
+  
+  return response.data;
 };

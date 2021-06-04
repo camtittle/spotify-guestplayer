@@ -59,16 +59,12 @@ export class ConfirmRequestDialog extends Component<ConfirmRequestProps, Confirm
     });
 
     this.context.setToastState(ToastState.Loading, 'Requesting track');
-
-    setTimeout(() => {
-      requestTrack(this.state.track.spotifyId, this.props.party.token).then(() => {
-        this.context.setToastState(ToastState.Success, 'Track requested');
-      }).catch(() => {
-        this.context.setToastState(ToastState.Error, 'Something went wrong');
-      })
-    }, 1000);
     
-    console.log('confirm ' + this.state.track.title);
+    requestTrack(this.state.track.spotifyId, this.props.party.token).then(() => {
+      this.context.setToastState(ToastState.Success, 'Track requested');
+    }).catch(() => {
+      this.context.setToastState(ToastState.Error, 'Something went wrong');
+    });
   }
   
   render() {
@@ -87,8 +83,8 @@ export class ConfirmRequestDialog extends Component<ConfirmRequestProps, Confirm
               <p>The host will be notified of your request and can choose to add to the queue or play now.</p>
               
               <div className={styles.buttons}>
-                <Button style={ButtonStyle.WhiteSecondary} size={ButtonSize.Small} onClick={this.onClose}>Cancel</Button>
-                <Button style={ButtonStyle.GreenPrimary} size={ButtonSize.Small} onClick={this.onConfirm}>Request track</Button>
+                <Button style={ButtonStyle.WhiteSecondary} size={ButtonSize.Medium} onClick={this.onClose}>Cancel</Button>
+                <Button style={ButtonStyle.GreenPrimary} size={ButtonSize.Medium} onClick={this.onConfirm}>Request track</Button>
               </div>
             </div>
           </FlexContainer>

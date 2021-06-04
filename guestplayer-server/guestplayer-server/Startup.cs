@@ -1,7 +1,10 @@
 using Business;
 using Database;
 using Domain.Config;
+using Domain.Interfaces.Services;
 using guestplayer_server.Helpers;
+using guestplayer_server.Websockets.Hubs;
+using guestplayer_server.Websockets.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -37,12 +40,12 @@ namespace guestplayer_server
             services.AddCors(
                 options =>
                 {
-                    options.AddDefaultPolicy(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+                    options.AddDefaultPolicy(builder => builder.WithOrigins("http://localhost:3000", "https://guestplayer.camtittle.com").AllowAnyMethod().AllowAnyHeader().AllowCredentials());
                 });
 
 
             // Auth
-            services.AddScoped<JwtService>();
+            services.AddSingleton<JwtService>();
 
             // Config
             services.Configure<AuthConfig>(Configuration.GetSection(AuthConfig.SectionName));
@@ -59,6 +62,10 @@ namespace guestplayer_server
 
             // Controllers
             services.AddControllers();
+
+            // SignalR
+            services.AddSignalR();
+            services.AddScoped<IWebsocketService, WebsocketService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -80,6 +87,7 @@ namespace guestplayer_server
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<PartyHub>("/hubs/party");
             });
         }
     }

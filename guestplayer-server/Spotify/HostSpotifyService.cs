@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Interfaces.Services;
 using Microsoft.Extensions.Options;
@@ -16,21 +17,17 @@ namespace Spotify
     {
 
         private readonly string USER_GRANT_TYPE = "authorization_code";
+        private readonly string REFRESH_GRANT_TYPE = "refresh_token";
 
         private readonly ISpotifyAccountsClient _spotifyAccountsClient;
+        private readonly ISpotifyClient _spotifyClient;
         private readonly SpotifyConfig _config;
 
-        private string _accessToken;
-
-        public HostSpotifyService(ISpotifyAccountsClient spotifyClient, IOptions<SpotifyConfig> options)
+        public HostSpotifyService(ISpotifyAccountsClient spotifyAccountsClient, ISpotifyClient spotifyClient, IOptions<SpotifyConfig> options)
         {
-            _spotifyAccountsClient = spotifyClient;
+            _spotifyAccountsClient = spotifyAccountsClient;
+            _spotifyClient = spotifyClient;
             _config = options.Value;
-        }
-
-        public void SetAccessToken(string token)
-        {
-            _accessToken = token;
         }
 
         public async Task<SpotifyCredentials> GetAccessToken(string code)
@@ -52,6 +49,56 @@ namespace Spotify
             };
 
             return spotifyTokens;
+        }
+
+        public async Task<SpotifyCredentials> RefreshCredentials(SpotifyCredentials credentials)
+        {
+            var request = new RefreshAccessTokenRequest
+            {
+                GrantType = REFRESH_GRANT_TYPE,
+                RefreshToken = credentials.RefreshToken
+
+            };
+            var response = await _spotifyAccountsClient.RefreshAccessToken(request);
+
+            var spotifyTokens = new SpotifyCredentials
+            {
+                AccessToken = response.AccessToken,
+                RefreshToken = credentials.RefreshToken,
+                ExpiresAt = DateTime.UtcNow.AddSeconds(response.ExpiresIn)
+            };
+
+            return spotifyTokens;
+        }
+
+        public async Task PlayTrack(string trackId, PlayType type, SpotifyCredentials credentials)
+        {
+            var uri = $"spotify:track:{trackId}";
+
+            try
+            {
+                switch (type)
+                {
+                    case PlayType.PlayNow:
+                        var request = new PlayRequest()
+                        {
+                            Uris = new string[] { uri }
+                        };
+                        await _spotifyClient.Play(request, credentials.AccessToken);
+                        break;
+                    case PlayType.AddToQueue:
+                        await _spotifyClient.Queue(uri, credentials.AccessToken);
+                        break;
+                }
+            } catch (ApiException e)
+            {
+                if (e.StatusCode == HttpStatusCode.NotFound)
+                {
+                    throw new ActivePlayerDeviceNotFound();
+                }
+
+                throw e;
+            }
         }
     }
 }

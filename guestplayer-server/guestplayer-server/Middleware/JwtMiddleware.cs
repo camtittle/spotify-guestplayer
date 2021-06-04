@@ -1,4 +1,5 @@
 ﻿using Domain.Config;
+using guestplayer_server.Helpers;
 using guestplayer_server.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
@@ -14,14 +15,14 @@ namespace WebApi.Helpers
     public class JwtMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly AuthConfig _authConfig;
+        private readonly JwtService _jwtService;
 
         private const string HEADER_NAME = "Authorization";
 
-        public JwtMiddleware(RequestDelegate next, IOptions<AuthConfig> authConfig)
+        public JwtMiddleware(RequestDelegate next, JwtService jwtService)
         {
             _next = next;
-            _authConfig = authConfig.Value;
+            _jwtService = jwtService;
         }
 
         public async Task Invoke(HttpContext context)
@@ -30,31 +31,20 @@ namespace WebApi.Helpers
 
             if (token != null)
             {
-                attachUserToContext(context, token);
+                AttachUserToContext(context, token);
             }
 
             await _next(context);
         }       
 
-        private void attachUserToContext(HttpContext context, string token)
+        private void AttachUserToContext(HttpContext context, string token)
         {
             try
             {
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.ASCII.GetBytes(_authConfig.Secret);
-                tokenHandler.ValidateToken(token, new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ClockSkew = TimeSpan.Zero
-                }, out SecurityToken validatedToken);
-
-                var jwtToken = (JwtSecurityToken)validatedToken;
-                var userId = jwtToken.Claims.First(x => x.Type == JwtClaim.Sub).Value;
-                var partyId = jwtToken.Claims.First(x => x.Type == JwtClaim.PartyId).Value;
-                var role = jwtToken.Claims.First(x => x.Type == JwtClaim.Role).Value;
+                var validatedToken = _jwtService.ValidateJwt(token);
+                var userId = validatedToken.Claims.First(x => x.Type == JwtClaim.Sub).Value;
+                var partyId = validatedToken.Claims.First(x => x.Type == JwtClaim.PartyId).Value;
+                var role = validatedToken.Claims.First(x => x.Type == JwtClaim.Role).Value;
 
                 context.Items[ContextItem.Role] = JwtRole.MapToRole(role);
                 context.Items[ContextItem.PartyId] = partyId;

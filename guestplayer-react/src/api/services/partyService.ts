@@ -10,7 +10,9 @@ import { PartySummary } from "../../models/PartySummary";
 enum Endpoint {
   CreateParty = '/party/create',
   GetParty = '/party/{id}',
-  JoinParty = '/party/{id}/join'
+  JoinParty = '/party/{id}/join',
+  EndParty = '/party',
+  LeaveParty = '/party/leave'
 };
 
 export const createParty = async (name: string, spotifyCredentials: SpotifyCredentials): Promise<Party> => {
@@ -61,7 +63,17 @@ export const joinParty = async (partyId: string): Promise<Party> => {
     token: response.token,
     role: response.role
   };
-}
+};
+
+export const endParty = async (token: string) => {
+  const headers = ApiService.getBearerTokenHeaders(token);
+  await ApiService.del(Endpoint.EndParty, undefined, headers);
+};
+
+export const leaveParty = async (token: string) => {
+  const headers = ApiService.getBearerTokenHeaders(token);
+  await ApiService.post(Endpoint.LeaveParty, undefined, undefined, headers);
+};
 
 export const generateJoinUrl = (partyId: string): string => {
   const baseUrl = process.env.REACT_APP_URL;

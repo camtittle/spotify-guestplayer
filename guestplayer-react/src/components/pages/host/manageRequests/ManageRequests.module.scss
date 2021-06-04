@@ -1,0 +1,107 @@
+@import '_colours';
+
+.errorContainer, .loadingContainer {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+
+    div {
+        text-align: center;
+    }
+}
+
+.cardsContainer {
+    padding: 18px 12px;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.requestCard {
+    background-color: $grey-90;
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 8px;
+    border-radius: 3px;
+}
+
+.buttonsContainer {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+}
+
+.playNow, .addToQueue {
+    width: fit-content;
+    display: inline-block;
+}
+
+.playNow {
+    width: 107px;
+}
+
+.addToQueue {
+    width: 134px;
+    margin-left: 12px;
+}
+
+.trashButton {
+    width: 27px;
+    height: 27px;
+    border: none;
+    cursor: pointer;
+    background-image: url('../../../../assets/img/trash.svg');
+    background-color: transparent;
+    background-size: 16px;
+    background-repeat: no-repeat;
+    background-position-y: center;
+    transition: transform 0.1s;
+
+    &:hover {
+        background-image: url('../../../../assets/img/trash-grey.svg');
+    }
+
+    &:active {
+        transform: scale(0.98);
+    }
+}
+
+.trackListItem {
+    background-color: transparent;
+}
+
+.fadeAppear {
+    opacity: 0.01;
+}
+
+.fadeAppearActive {
+    opacity: 1;
+    transition: opacity 0.4s;
+}
+
+.fadeEnter {
+    opacity: 0.01;
+}
+
+.fadeEnterActive {
+    opacity: 1;
+    transition: opacity 0.4s;
+    background-color: rgb(170, 170, 170);
+}
+
+.fadeEnterDone {
+    transition: background-color 0.4s;
+}
+
+.slideExit {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+}
+
+.slideExitActive {
+    transform: translate3d(110%, 0, 0);
+    transition: transform 0.3s, opacity 0.3s;
+    opacity: 0;
+}

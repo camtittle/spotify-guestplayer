@@ -12,6 +12,7 @@ export enum ButtonStyle {
 
 export enum ButtonSize {
   Small = 'Small',
+  Medium = 'Medium',
   Large = 'Large'
 }
 
@@ -24,13 +25,14 @@ interface ButtonProps {
   disabled?: boolean;
   loading?: boolean;
   size?: ButtonSize;
+  badge?: string | number;
 }
 
 export const Button: React.FC<ButtonProps> = (props) => {
 
   const loading = props.loading === true;
   const classNames = [styles.button, props.className];
-  
+
   if (props.style === ButtonStyle.WhiteSecondary) {
     classNames.push(styles.secondary);
   } else if (props.style === ButtonStyle.GreenPrimary) {
@@ -46,7 +48,9 @@ export const Button: React.FC<ButtonProps> = (props) => {
   }
 
   if (props.size) {
-    if (props.size === ButtonSize.Small) {
+    if (props.size === ButtonSize.Medium) {
+      classNames.push(styles.medium);
+    } else if (props.size === ButtonSize.Small) {
       classNames.push(styles.small);
     }
   }
@@ -55,27 +59,42 @@ export const Button: React.FC<ButtonProps> = (props) => {
 
   return (
     <button className={classNames.join(' ')} onClick={props.onClick} disabled={props.disabled}>
-        <CSSTransition
-          classNames="button-loading-transition"
-          timeout={150}
-          in={!loading}
-          unmountOnExit
-        >
+      <CSSTransition
+        classNames="button-loading-transition"
+        timeout={150}
+        in={!loading}
+        unmountOnExit
+      >
         <div className={styles.buttonContainer}>
-            {img}
-            <span className={styles.label}>{props.children}</span>
-          </div>
-        </CSSTransition>
-        <CSSTransition
-          classNames="button-loading-transition"
-          timeout={150}
+          {img}
+          <span className={styles.label}>{props.children}</span>
+        </div>
+      </CSSTransition>
+      <CSSTransition
+        classNames="button-loading-transition"
+        timeout={150}
         in={loading}
         unmountOnExit
       >
         <div className={styles.buttonContainer}>
           <LoadingSpinner className={styles.loadingSpinner} />
         </div>
-        </CSSTransition>
+      </CSSTransition>
+
+      <CSSTransition
+        classNames="button-badge-grow"
+        timeout={900}
+        in={!!props.badge}
+        mountOnEnter
+        unmountOnExit
+      >
+        <div className={styles.badge}>
+          <div>{props.badge}</div>
+        </div>
+      </CSSTransition>
+
+
+
 
     </button>
   )

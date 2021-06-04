@@ -1,25 +1,52 @@
-import { useContext, useEffect } from "react";
+import { Fragment, useContext, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router";
 import { PartyContext } from "../../../../contexts/partyContext";
 import PartyHome from "../../../shared/partyHome/PartyHome";
 import styles from './HostHome.module.scss';
 import MusicalNotes from '../../../../assets/img/musical-note.svg';
+import LogoutIcon from '../../../../assets/img/logout.svg';
 import Share from '../../../../assets/img/share.svg';
 import { Role } from "../../../../api/models/role";
+import { getTrackRequestCount, subscribeToTrackRequests, unsubscribeFromTrackRequests } from "../../../../api/services/requestService";
+import { Subscription } from "../../../../api/services/websocketService";
+import { MenuItem } from "../../../shared/titleBar/menu/Menu";
+import Dialog from "../../../shared/dialog/Dialog";
+import { endParty } from "../../../../api/services/partyService";
 
 export default function HostHome() {
 
-  const { party, partyLoaded } = useContext(PartyContext);
+  const { party, partyLoaded, setParty } = useContext(PartyContext);
+  const [requestCount , setRequestCount] = useState<number>(0);
   const history = useHistory();
+  const endPartyDialogRef = useRef<Dialog>(null);
 
   useEffect(() => {
-    console.log({ party });
+
+    let trackRequestsSubscription: Subscription;
+
     if (partyLoaded) {
-      console.log('loaded');
       if (!party) {
         history.push('/');
       } else if (party.role === Role.Guest) {
         history.push('/party/guest')
+      } else {
+        trackRequestsSubscription = subscribeToTrackRequests(party.token, (request) => {
+          setRequestCount((count) => {
+            return count + 1;
+          })
+        });
+
+        getTrackRequestCount(party.token).then(count => {
+          setRequestCount(count);
+        }).catch(e => {
+          console.log(e);
+        });
+      }
+    }
+
+    return () => {
+      if (trackRequestsSubscription) {
+        unsubscribeFromTrackRequests(trackRequestsSubscription);
       }
     }
   }, [party, partyLoaded, history]);
@@ -40,7 +67,10 @@ export default function HostHome() {
   const primaryButton = {
     label: 'View requests',
     icon: MusicalNotes,
-    onClick: () => { }
+    badge: requestCount,
+    onClick: () => {
+      history.push('/party/host/requests');
+    }
   };
 
   const secondaryButton = {
@@ -48,7 +78,39 @@ export default function HostHome() {
     icon: Share
   };
 
+  const menuItems: MenuItem[] = [
+    {
+      label: 'End party',
+      icon: LogoutIcon,
+      onClick: () => {
+        endPartyDialogRef.current?.show();
+      }
+    }
+  ];
+
+  const onConfirmEndParty = async () => {
+    if (!party) {
+      throw new Error('Cannot end party - party context is null');
+    }
+
+    endPartyDialogRef.current?.hide();
+    setParty(undefined);
+    await endParty(party.token);
+  };
+
   return (
-    <PartyHome header={header} qrLabel={qrLabel} primaryButton={primaryButton} secondaryButton={secondaryButton}></PartyHome>
+    <Fragment>
+      <PartyHome header={header} qrLabel={qrLabel} primaryButton={primaryButton} secondaryButton={secondaryButton} menuItems={menuItems}></PartyHome>
+
+      <Dialog
+        title="End party?"
+        body="Guests will no longer be able to request tracks but your music will keep playing on Spotify."
+        primaryLabel="End party"
+        onClickPrimary={onConfirmEndParty}
+        secondaryLabel="Cancel"
+        onClickSecondary={() => endPartyDialogRef.current?.hide()}
+        ref={endPartyDialogRef}
+      />
+    </Fragment>
   )
 }

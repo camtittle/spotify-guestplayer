@@ -14,10 +14,12 @@ namespace Business.Services
     public class PartyService : IPartyService
     {
         private readonly IPartyRepository _partyRepository;
+        private readonly IWebsocketService _websocketService;
 
-        public PartyService(IPartyRepository partyRepository)
+        public PartyService(IPartyRepository partyRepository, IWebsocketService websocketService)
         {
             _partyRepository = partyRepository;
+            _websocketService = websocketService;
         }
 
         public async Task<Party> CreateParty(CreatePartyParams partyParams)
@@ -40,6 +42,25 @@ namespace Business.Services
             return party;
         }
 
+        public async Task EndParty(string partyId)
+        {
+            var party = await GetParty(partyId);
+
+            if (party == null)
+            {
+                throw new NotFoundException();
+            }
+
+            party.DeletedAt = DateTime.UtcNow;
+
+            await Task.WhenAll(new []
+            {
+                _partyRepository.PutParty(party),
+                _partyRepository.HardDeleteAllTrackRequests(partyId),
+                _websocketService.Disconnect(partyId)
+            });
+        }
+
         public async Task<Party> GetParty(string id)
         {
             var party = await _partyRepository.GetParty(id);
@@ -60,6 +81,16 @@ namespace Business.Services
             await _partyRepository.UpdateParty(party);
 
             return party;
+        }
+
+        public async Task LeaveParty(string userId, Party party)
+        {
+            if (party.GuestCount > 0)
+            {
+                party.GuestCount--;
+            }
+
+            await _partyRepository.PutParty(party);
         }
     }
 }

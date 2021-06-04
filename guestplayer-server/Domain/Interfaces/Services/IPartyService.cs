@@ -12,5 +12,7 @@ namespace Domain.Interfaces.Services
         public Task<Party> CreateParty(CreatePartyParams partyParams);
         public Task<Party> GetParty(string id);
         public Task<Party> JoinParty(string id);
+        public Task EndParty(string id);
+        public Task LeaveParty(string userId, Party party);
     }
 }

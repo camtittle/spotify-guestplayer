@@ -12,5 +12,6 @@ namespace Domain.Entities
         public ItemType Type { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime LastUpdated { get; set; }
+        public DateTime? DeletedAt { get; set; }
     }
 }
