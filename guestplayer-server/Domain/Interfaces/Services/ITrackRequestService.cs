@@ -13,6 +13,7 @@ namespace Domain.Interfaces.Services
         public Task<TrackRequest> CreateTrackRequest(CreateTrackRequestParams createParams);
         public Task<TrackRequest[]> GetTrackRequests(string partyId);
         public Task<int> GetTrackRequestCount(string partyId);
+        public Task<TrackRequest[]> GetPendingTrackRequestsForUser(string partyId, string userId);
         public Task DeleteTrackRequest(string partyId, string requestId);
         public Task AcceptTrackRequest(string partyId, string requestId, PlayType type);
     }

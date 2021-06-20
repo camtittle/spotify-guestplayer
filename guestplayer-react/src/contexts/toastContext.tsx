@@ -1,16 +1,12 @@
-import React, { createContext, useState } from "react";
-import Toast, { ToastState } from "../components/shared/toast/Toast";
+import React, { createContext, useRef, useState } from "react";
+import Toast, { ToastNotification, ToastStyle } from "../components/shared/toast/Toast";
 
-interface ToastContextType {
-  toastState: ToastState;
-  label: string;
-  setToastState: (state: ToastState, label: string) => void;
+export interface ToastContextType {
+  showToast: (notification?: ToastNotification) => void;
 }
 
 export const ToastContext = createContext<ToastContextType>({
-  toastState: ToastState.Disabled,
-  label: '',
-  setToastState: () => {}
+  showToast: () => {}
 });
 
 interface ToastContextProviderProps {
@@ -19,20 +15,18 @@ interface ToastContextProviderProps {
 
 export const ToastContextProvider = ({ children }: ToastContextProviderProps) => {
   
-  const [toastContext, setToastContext] = useState<ToastContextType>({
-    toastState: ToastState.Disabled,
-    label: '',
-    setToastState: (toastState: ToastState, label: string) => {
-      setToastContext((previous) => {
-        return { ...previous, toastState, label}
-      });
+  const toastRef = useRef<Toast>(null);
+
+  const toastContext = useRef<ToastContextType>({
+    showToast: (notification?: ToastNotification) => {
+      toastRef.current?.showToast(notification);
     }
   });
 
   return (
-    <ToastContext.Provider value={toastContext}>
+    <ToastContext.Provider value={toastContext?.current}>
       {children}
-      <Toast state={toastContext.toastState} label={toastContext.label} />
+      <Toast ref={toastRef} />
     </ToastContext.Provider>
   );
 }

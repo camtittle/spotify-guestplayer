@@ -109,6 +109,32 @@ namespace Database.Repositories
             return requests.ToArray();
         }
 
+        public async Task<TrackRequest[]> GetPendingTrackRequestsForUser(string partyId, string userId)
+        {
+            var query = $"select * from {_config.ContainerName} p where p.type = @request and p.userId = @userId and IS_NULL(p.deletedAt) and IS_NULL(p.acceptedAt)";
+
+            List<TrackRequest> requests = new List<TrackRequest>();
+
+            QueryDefinition queryDefinition = new QueryDefinition(query)
+                .WithParameter("@request", ItemType.Request)
+                .WithParameter("@userId", userId);
+
+            using FeedIterator<TrackRequest> feedIterator = _container.GetItemQueryIterator<TrackRequest>(
+                queryDefinition,
+                null,
+                new QueryRequestOptions() { PartitionKey = new PartitionKey(partyId) });
+
+            while (feedIterator.HasMoreResults)
+            {
+                foreach (var item in await feedIterator.ReadNextAsync())
+                {
+                    requests.Add(item);
+                }
+            }
+
+            return requests.ToArray();
+        }
+
         public async Task<int> GetTrackRequestCount(string partyId)
         {
             var count = 0;
@@ -141,6 +167,30 @@ namespace Database.Repositories
             {
                 await _container.DeleteItemAsync<TrackRequest>(request.Id, new PartitionKey(request.PartyId));
             }
+        }
+
+        public async Task PutRefreshToken(RefreshToken refreshToken)
+        {
+            refreshToken.LastUpdated = DateTime.UtcNow;
+            await _container.UpsertItemAsync<RefreshToken>(refreshToken, new PartitionKey(refreshToken.PartyId));
+        }
+
+        public async Task<RefreshToken> GetRefreshToken(string partyId, string refreshTokenId)
+        {
+            try
+            {
+                ItemResponse<RefreshToken> response = await _container.ReadItemAsync<RefreshToken>(refreshTokenId, new PartitionKey(partyId));
+                return response.Resource;
+            }
+            catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                return null;
+            }
+        }
+
+        public async Task DeleteRefreshToken(string partyId, string refreshTokenId)
+        {
+            await _container.DeleteItemAsync<RefreshToken>(refreshTokenId, new PartitionKey(partyId));
         }
     }
 }

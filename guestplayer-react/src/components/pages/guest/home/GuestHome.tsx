@@ -8,12 +8,15 @@ import Share from '../../../../assets/img/share.svg';
 import { Role } from "../../../../api/models/role";
 import { MenuItem } from "../../../shared/titleBar/menu/Menu";
 import LogoutIcon from '../../../../assets/img/logout.svg';
+import MusicalNotesWhite from '../../../../assets/img/musical-note-white.svg';
 import Dialog from "../../../shared/dialog/Dialog";
 import { leaveParty } from "../../../../api/services/partyService";
+import { useApiErrorHandler } from "../../../../hooks/apiErrorHandlerHook";
 
 export default function GuestHome() {
 
   const { party, partyLoaded, setParty } = useContext(PartyContext);
+  const handleApiError = useApiErrorHandler();
   const history = useHistory();
   const leavePartyDialogRef = useRef<Dialog>(null);
 
@@ -62,7 +65,14 @@ export default function GuestHome() {
       onClick: () => {
         leavePartyDialogRef.current?.show();
       }
-    }
+    },
+    {
+      label: 'My requests',
+      icon: MusicalNotesWhite,
+      onClick: () => {
+        history.push('/party/guest/requests')
+      }
+    },
   ];
 
   const onConfirmLeaveParty = async () => {
@@ -72,7 +82,9 @@ export default function GuestHome() {
 
     leavePartyDialogRef.current?.hide();
     setParty(undefined);
-    await leaveParty(party.token);
+    handleApiError(async () => {
+      await leaveParty();
+    });
   }
 
   return (

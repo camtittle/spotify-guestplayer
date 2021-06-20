@@ -25,6 +25,5 @@ namespace guestplayer_server.Models
 
         [Required]
         public string Name { get; set; }
-
     }
 }

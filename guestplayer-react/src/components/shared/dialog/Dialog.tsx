@@ -8,10 +8,10 @@ import styles from './Dialog.module.scss';
 interface DialogProps {
   title: string;
   body: string;
-  secondaryLabel: string;
+  secondaryLabel?: string;
   primaryLabel: string;
   onClickPrimary: () => void;
-  onClickSecondary: () => void;
+  onClickSecondary?: () => void;
 }
 
 class Dialog extends Component<DialogProps> {
@@ -38,6 +38,13 @@ class Dialog extends Component<DialogProps> {
   }
 
   render() {
+    let secondaryButtonStyles = {};
+    if (!this.props.secondaryLabel) {
+      secondaryButtonStyles = {
+        visibility: 'none'
+      };
+    }
+
     return (
       <Fragment>
         <Backdrop visible={this.state.visible} onClick={this.onDismiss} />
@@ -53,7 +60,9 @@ class Dialog extends Component<DialogProps> {
               <div className={styles.title}>{this.props.title}</div>
               <div className={styles.body}>{this.props.body}</div>
               <div className={styles.buttonsContainer}>
-                <Button style={ButtonStyle.WhiteSecondary} size={ButtonSize.Medium} onClick={this.props.onClickSecondary}>{this.props.secondaryLabel}</Button>
+                {this.props.secondaryLabel &&
+                  <Button style={ButtonStyle.WhiteSecondary} size={ButtonSize.Medium} onClick={this.props.onClickSecondary}>{this.props.secondaryLabel}</Button>
+                }
                 <Button style={ButtonStyle.GreenPrimary} size={ButtonSize.Medium} onClick={this.props.onClickPrimary}>{this.props.primaryLabel}</Button>
               </div>
             </div>

@@ -17,6 +17,9 @@ namespace guestplayer_server.Controllers
     [ApiController]
     public class RequestController : ControllerBase
     {
+
+        private const int MAX_PENDING_REQS = 5;
+
         private readonly IPartyService _partyService;
         private readonly ITrackRequestService _trackRequestService;
 
@@ -41,9 +44,16 @@ namespace guestplayer_server.Controllers
             var userId = HttpContext.GetUserId();
 
             var party = await _partyService.GetParty(partyId);
-            if (party == null)
+            if (party == null || party.Ended)
             {
-                return BadRequest("Party doesn't exist");
+                return BadRequest(new ErrorResponse(ErrorCodes.PARTY_ENDED));
+            }
+
+            var pendingRequests = await _trackRequestService.GetPendingTrackRequestsForUser(partyId, userId);
+
+            if (pendingRequests.Length >= MAX_PENDING_REQS)
+            {
+                return BadRequest(new ErrorResponse(ErrorCodes.TOO_MANY_PENDING_REQUESTS));
             }
 
             var createTrackRequestParams = new CreateTrackRequestParams()
@@ -67,7 +77,7 @@ namespace guestplayer_server.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(Role.Host)]
-        public async Task<ActionResult> GetRequests(int? limit)
+        public async Task<ActionResult> GetRequests()
         {
             if (!ModelState.IsValid)
             {
@@ -77,6 +87,36 @@ namespace guestplayer_server.Controllers
             var partyId = HttpContext.GetPartyId();
 
             var trackRequests = await _trackRequestService.GetTrackRequests(partyId);
+
+            var response = trackRequests.Select(x => new TrackRequestResponse()
+            {
+                Id = x.Id,
+                SpotifyTrackId = x.SpotifyTrackId,
+                Title = x.Title,
+                Artist = x.Artist,
+                ArtworkUrl = x.ArtworkUrl,
+                Album = x.Album,
+                CreatedAt = x.CreatedAt
+            });
+
+            return Ok(response);
+        }
+
+        [HttpGet("guest")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(Role.Guest)]
+        public async Task<ActionResult> GetGuestRequests()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState.ValidationState);
+            }
+
+            var partyId = HttpContext.GetPartyId();
+            var userId = HttpContext.GetUserId();
+
+            var trackRequests = await _trackRequestService.GetPendingTrackRequestsForUser(partyId, userId);
 
             var response = trackRequests.Select(x => new TrackRequestResponse()
             {

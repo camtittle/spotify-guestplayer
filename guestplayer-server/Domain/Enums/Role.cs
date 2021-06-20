@@ -7,6 +7,7 @@ namespace Domain.Enums
     public enum Role
     {
         Host,
-        Guest
+        Guest,
+        Cohost
     }
 }

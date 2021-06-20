@@ -15,6 +15,10 @@ import GuestHome from './components/pages/guest/home/GuestHome';
 import Request from './components/pages/guest/request/Request';
 import { ToastContextProvider } from './contexts/toastContext';
 import ManageRequests from './components/pages/host/manageRequests/ManageRequests';
+import ManageGuestRequests from './components/pages/guest/manageGuestRequests/ManageGuestRequests';
+import CreatePartyIntro from './components/pages/host/createPartyIntro/CreatePartyIntro';
+import CohostIntro from './components/pages/host/cohost/cohostIntro/CohostIntro';
+import AddCohost from './components/pages/host/cohost/addCohost/AddCohost';
 
 export default function App() {
   return (
@@ -23,7 +27,6 @@ export default function App() {
         <div className={styles.App}>
           <ToastContextProvider>
             <Switch>
-
               <Route path="*">
                 <SlideLeft>
                   <Route path="/join/:id">
@@ -32,6 +35,10 @@ export default function App() {
 
                   <Route path="/scan">
                     <Scan />
+                  </Route>
+
+                  <Route path='/party/guest/requests'>
+                    <ManageGuestRequests />
                   </Route>
 
                   <Route path='/party/guest/request'>
@@ -50,6 +57,18 @@ export default function App() {
                     <HostHome />
                   </Route>
                   
+                  <Route path="/party/cohost/intro">
+                    <CohostIntro />
+                  </Route>
+                  
+                  <Route path="/party/cohost">
+                    <AddCohost />
+                  </Route>
+                  
+                  <Route path="/party/create/intro">
+                    <CreatePartyIntro />
+                  </Route>
+                  
                   <Route path="/party/create">
                     <CreateParty />
                   </Route>
@@ -65,6 +84,7 @@ export default function App() {
             </ToastContextProvider>
         </div>
       </Router>
+        
     </PartyContextProvider>
   );
 }

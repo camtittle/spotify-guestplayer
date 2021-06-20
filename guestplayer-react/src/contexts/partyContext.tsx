@@ -1,6 +1,9 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useRef, useState } from "react";
+import { PartyErrorType } from "../api/models/partyErrorType";
+import Dialog from "../components/shared/dialog/Dialog";
 import { Party } from "../models/Party";
 import { SpotifyCredentials } from "../models/SpotifyCredentials";
+import * as TokenManager from '../api/auth/tokenManager';
 
 export interface PartyContextType {
   party?: Party;
@@ -8,6 +11,7 @@ export interface PartyContextType {
   setParty: (party?: Party) => void;
   spotifyCredentials?: SpotifyCredentials;
   setSpotifyCredentials: (creds?: SpotifyCredentials) => void;
+  setError: (errorType: PartyErrorType) => void;
 }
 
 export const PartyContext = createContext<PartyContextType>({
@@ -15,9 +19,9 @@ export const PartyContext = createContext<PartyContextType>({
   partyLoaded: false,
   setParty: () => {},
   spotifyCredentials: undefined,
-  setSpotifyCredentials: () => {}
+  setSpotifyCredentials: () => { },
+  setError: () => { },
 });
-
 
 interface PartyContextProviderProps {
   children: React.ReactNode;
@@ -42,12 +46,23 @@ export const PartyContextProvider = ({ children }: PartyContextProviderProps) =>
     }
   }
 
+  const partyEndedDialog = useRef<Dialog>(null);
+
+  const handleError = (errorType: PartyErrorType) => {
+    if (errorType === PartyErrorType.PartyEnded) {
+      partyEndedDialog.current?.show();
+    }
+  }
+
   const [partyContext, setPartyContext] = useState<PartyContextType>({
     party: undefined,
     partyLoaded: false,
     setParty: (party?: Party) => {
-      saveParty(party);
       console.log(party);
+      saveParty(party);
+      if (party) {
+        TokenManager.setBearerToken(party.token);
+      }
       setPartyContext((previous) => {
         return { ...previous, party: party, partyLoaded: true }
       });
@@ -57,6 +72,9 @@ export const PartyContextProvider = ({ children }: PartyContextProviderProps) =>
       setPartyContext((previous) => {
         return { ...previous, spotifyCredentials: creds }
       });
+    },
+    setError: (errorType: PartyErrorType) => {
+      handleError(errorType);
     }
   });
 
@@ -65,8 +83,19 @@ export const PartyContextProvider = ({ children }: PartyContextProviderProps) =>
     partyContext.setParty(savedParty);
   }, []);
 
+  const closeSessionExpiredDialog = () => {
+    partyEndedDialog.current?.hide();
+  };
+
   return (
     <PartyContext.Provider value={partyContext}>
+      <Dialog
+        title="Party ended"
+        body="The party was ended by the host"
+        primaryLabel="OK"
+        onClickPrimary={closeSessionExpiredDialog}
+        ref={partyEndedDialog}
+      ></Dialog>
       {children}
     </PartyContext.Provider>
   );

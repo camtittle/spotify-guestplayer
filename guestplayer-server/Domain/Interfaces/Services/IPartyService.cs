@@ -14,5 +14,6 @@ namespace Domain.Interfaces.Services
         public Task<Party> JoinParty(string id);
         public Task EndParty(string id);
         public Task LeaveParty(string userId, Party party);
+        public Task<Party> AddCohost(string partyId, string userId, string joinToken);
     }
 }

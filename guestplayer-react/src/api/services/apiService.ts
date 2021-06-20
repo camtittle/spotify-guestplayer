@@ -1,6 +1,6 @@
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import { getBearerToken } from '../auth/tokenManager';
 import { ApiError } from "../error/ApiError";
-import { StatusCode } from "../models/statusCodes";
 
 export interface PathParams {
   [key: string]: string
@@ -9,17 +9,6 @@ export interface PathParams {
 export interface Headers {
   [key: string]: string
 };
-
-export  const getBearerTokenHeaders = (bearerToken: string) => {
-  return {
-    Authorization: `Bearer ${bearerToken}`
-  };
-}
-
-const isSuccess = (response: AxiosResponse<any>): boolean => {
-  return response.status === StatusCode.Ok || response.status === StatusCode.NoContent
-}
-
 
 const getEndpointUrl = (path: string, pathParams?: PathParams) => {
   let url = process.env.REACT_APP_API_URL + '/api' + path;
@@ -31,13 +20,14 @@ const getEndpointUrl = (path: string, pathParams?: PathParams) => {
   return url;
 }
 
-export const post = async <TResponse>(path: string, body: any, pathParams?: PathParams, headers?: Headers): Promise<TResponse> => {
+export const post = async <TResponse>(path: string, body?: any, pathParams?: PathParams, headers?: Headers, skipAuth = false): Promise<TResponse> => {
   const url = getEndpointUrl(path, pathParams);
 
-  const params = {
+  const params: AxiosRequestConfig = {
     headers: {
       'Content-Type': 'application/json',
-    }
+    },
+    withCredentials: true
   };
 
   if (headers) {
@@ -45,19 +35,28 @@ export const post = async <TResponse>(path: string, body: any, pathParams?: Path
       (params.headers as Record<string, string>)[key] = headers[key]
     })
   }
-  
-  const response = await axios.post(url, body, params);
 
-  if (!isSuccess(response)) {
-    throw new ApiError(response.status, response.data)
+  if (!skipAuth) {
+    const bearerToken = await getBearerToken();
+    if (bearerToken) {
+      params.headers.Authorization = `Bearer ${bearerToken}`
+    }
   }
   
-  return response.data;
+  try {
+    const response = await axios.post(url, body, params);
+    return response.data;
+  } catch (e) {
+    if (e && e.response) {
+      throw new ApiError(e.response.status, e.response.data);
+    }
+    throw e;
+  }
 }
 
-export const get = async <TResponse>(path: string, pathParams?: PathParams, headers?: Headers): Promise<TResponse> => {
+export const get = async <TResponse>(path: string, pathParams?: PathParams, headers?: Headers, skipAuth = false): Promise<TResponse> => {
   const url = getEndpointUrl(path, pathParams);
-  const params = {
+  const params: AxiosRequestConfig = {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -69,18 +68,27 @@ export const get = async <TResponse>(path: string, pathParams?: PathParams, head
     })
   }
 
-  const response = await axios.get<TResponse>(url, params);
-
-  if (!isSuccess(response)) {
-    throw new ApiError(response.status, response.data)
+  if (!skipAuth) {
+    const bearerToken = await getBearerToken();
+    if (bearerToken) {
+      params.headers.Authorization = `Bearer ${bearerToken}`
+    }
   }
 
-  return response.data;
+  try {
+    const response = await axios.get<TResponse>(url, params);
+    return response.data;
+  } catch (e) {
+    if (e && e.response) {
+      throw new ApiError(e.response.status, e.response.data);
+    }
+    throw e;
+  }
 };
 
 export const del = async <TResponse>(path: string, pathParams?: PathParams, headers?: Headers): Promise<TResponse | undefined> => {
   const url = getEndpointUrl(path, pathParams);
-  const params = {
+  const params: AxiosRequestConfig = {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -92,11 +100,19 @@ export const del = async <TResponse>(path: string, pathParams?: PathParams, head
     })
   }
 
-  const response = await axios.delete(url, params);
-
-  if (!isSuccess(response)) {
-    throw new ApiError(response.status, response.data)
+  const bearerToken = await getBearerToken();
+  if (bearerToken) {
+    params.headers.Authorization = `Bearer ${bearerToken}`
   }
-  
-  return response.data;
+
+  try {
+    const response = await axios.delete(url, params);
+    return response.data;
+  } catch (e) {
+    if (e && e.response) {
+      throw new ApiError(e.response.status, e.response.data);
+    }
+    throw e;
+  }
+
 };

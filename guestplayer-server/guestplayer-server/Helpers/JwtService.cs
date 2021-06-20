@@ -15,22 +15,21 @@ namespace guestplayer_server.Helpers
     {
         private readonly AuthConfig _authConfig;
 
-        // TODO change expiry to 24 hours
-        private const int EXPIRY_HOURS = 1000;
+        private const int EXPIRY_HOURS = 1;
 
         public JwtService(IOptions<AuthConfig> authConfig)
         {
             _authConfig = authConfig.Value;
         }
 
-        public string generateJwt(string partyId, string role)
+        public string generateJwt(string partyId, string userId, string role)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_authConfig.Secret);
             var claims = new[] { 
-                new Claim(JwtClaim.Sub, Guid.NewGuid().ToString()),
+                new Claim(JwtClaim.Sub, userId),
                 new Claim(JwtClaim.PartyId, partyId),
-                new Claim(JwtClaim.Role, role)
+                new Claim(JwtClaim.Role, role),
             };
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -40,6 +39,11 @@ namespace guestplayer_server.Helpers
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
+        }
+
+        internal object generateJwt(string partyId, string userId, object role)
+        {
+            throw new NotImplementedException();
         }
 
         public JwtSecurityToken ValidateJwt(string token)

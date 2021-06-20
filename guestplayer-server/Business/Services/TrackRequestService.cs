@@ -78,6 +78,21 @@ namespace Business.Services
             return await _partyRepository.GetTrackRequestCount(partyId);
         }
 
+        public async Task<TrackRequest[]> GetPendingTrackRequestsForUser(string partyId, string userId)
+        {
+            if (partyId == null)
+            {
+                throw new ArgumentNullException(nameof(partyId));
+            }
+
+            if (userId == null)
+            {
+                throw new ArgumentNullException(nameof(partyId));
+            }
+
+            return await _partyRepository.GetPendingTrackRequestsForUser(partyId, userId);
+        }
+
         public async Task DeleteTrackRequest(string partyId, string requestId)
         {
             if (partyId == null)

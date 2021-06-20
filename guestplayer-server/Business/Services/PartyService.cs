@@ -33,7 +33,8 @@ namespace Business.Services
                 Name = partyParams.PartyName,
                 GuestCount = 0,
                 SpotifyCredentials = partyParams.SpotifyCredentials,
-                CreatedAt = DateTime.UtcNow,
+                CohostJoinToken = Guid.NewGuid().ToString(),
+            CreatedAt = DateTime.UtcNow,
                 LastUpdated = DateTime.UtcNow
             };
 
@@ -72,7 +73,7 @@ namespace Business.Services
         {
             var party = await GetParty(id);
 
-            if (party == null)
+            if (party == null || party.Ended)
             {
                 throw new NotFoundException();
             }
@@ -91,6 +92,32 @@ namespace Business.Services
             }
 
             await _partyRepository.PutParty(party);
+        }
+
+        public async Task<Party> AddCohost(string partyId, string userId, string joinToken)
+        {
+            var party = await GetParty(partyId);
+
+            if (party == null)
+            {
+                throw new NotFoundException();
+            }
+
+            if (party.Ended)
+            {
+                throw new PartyEndedException();
+            }
+
+            if (party.CohostJoinToken != joinToken)
+            {
+                throw new TokenInvalidException();
+            }
+
+            party.CohostJoinToken = Guid.NewGuid().ToString();
+            party.Cohosts.Add(userId);
+            await _partyRepository.PutParty(party);
+
+            return party;
         }
     }
 }

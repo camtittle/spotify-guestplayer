@@ -7,7 +7,7 @@ import { Button, ButtonStyle } from "../button/Button";
 import FlexContainer from "../container/FlexContainer";
 import { MenuItem } from "../titleBar/menu/Menu";
 import { TitleBar } from "../titleBar/TitleBar";
-import { ToastState } from "../toast/Toast";
+import { ToastStyle } from "../toast/Toast";
 import styles from './PartyHome.module.scss';
 
 export interface PartyHomeProps {
@@ -29,20 +29,19 @@ export interface PartyHomeProps {
 export default function PartyHome(props: PartyHomeProps) {
 
   const [qrCodeSrc, setQrCodeSrc] = useState<string>();
-  const [partyJoinUrl, setPartyJoinUrl] = useState<string>();
+  const [partyJoinUrl, setPartyJoinUrl] = useState<string>('');
   const { party } = useContext(PartyContext);
-  const { setToastState } = useContext(ToastContext);
-  const qrCanvasRef = useRef<HTMLCanvasElement>(null);
+  const { showToast }= useContext(ToastContext);
   const partyIdRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (qrCanvasRef && party?.id) {
+    if (party?.id) {
       generateQrCode(party.id)
         .then(uri => {
           setQrCodeSrc(uri);
         });
     }
-  }, [party?.id, qrCanvasRef]);
+  }, [party?.id]);
 
   useEffect(() => {
     if (!party) {
@@ -50,7 +49,7 @@ export default function PartyHome(props: PartyHomeProps) {
     }
     const url = generateJoinUrl(party.id);
     setPartyJoinUrl(url);
-  }, [party?.id])
+  }, [party?.id]);
 
   const onClickShare = async () => {
     if (!party) {
@@ -64,10 +63,14 @@ export default function PartyHome(props: PartyHomeProps) {
         url: partyJoinUrl
       });
     } else {
+      console.log('share');
       if (partyIdRef.current) {
         partyIdRef.current.select();
         document.execCommand("copy");
-        setToastState(ToastState.Success, 'Sharing link copied to clipboard');
+        showToast({
+          style: ToastStyle.Success,
+          text: 'Sharing link copied to clipboard'
+        });
       }
     }
   }
@@ -96,7 +99,7 @@ export default function PartyHome(props: PartyHomeProps) {
         </div>
       </ActionBar>
 
-      <input className={styles.partyIdInput} type="text" ref={partyIdRef} value={partyJoinUrl} />
+      <input className={styles.partyIdInput} type="text" ref={partyIdRef} value={partyJoinUrl} readOnly />
     </FlexContainer>
   )
 }

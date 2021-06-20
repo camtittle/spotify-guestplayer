@@ -49,14 +49,12 @@ export const getProfile = async (): Promise<SpotifyProfile> => {
   };
 }
 
-export const searchTracks = async (searchTerm: string, authToken: string): Promise<Track[]> => {
+export const searchTracks = async (searchTerm: string): Promise<Track[]> => {
   const params = {
     searchTerm: encodeURIComponent(searchTerm)
   };
 
-  const headers = ApiService.getBearerTokenHeaders(authToken);
-
-  const response = await ApiService.get<TrackResponse[]>(Endpoint.SearchTracks, params, headers);
+  const response = await ApiService.get<TrackResponse[]>(Endpoint.SearchTracks, params);
 
   return response.map(x => {
     return {

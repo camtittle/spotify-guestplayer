@@ -11,6 +11,7 @@ namespace guestplayer_server.Models
     {
         public const string HOST = "Host";
         public const string GUEST = "Guest";
+        public const string COHOST = "Cohost";
 
         public static Role MapToRole(string jwtRole)
         {
@@ -20,8 +21,25 @@ namespace guestplayer_server.Models
                     return Role.Host;
                 case GUEST:
                     return Role.Guest;
+                case COHOST:
+                    return Role.Cohost;
                 default:
                     throw new AuthorizationException($"Invalid role found: {jwtRole}");
+            }
+        }
+
+        public static string MapToJwtRole(Role role)
+        {
+            switch (role)
+            {
+                case Role.Guest:
+                    return GUEST;
+                case Role.Host:
+                    return HOST;
+                case Role.Cohost:
+                    return COHOST;
+                default:
+                    throw new AuthorizationException($"Invalid role found: {role}");
             }
         }
     }

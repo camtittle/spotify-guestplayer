@@ -9,8 +9,9 @@ import styles from './Request.module.scss';
 import { throttle } from 'throttle-debounce';
 import { PartyContext } from '../../../../contexts/partyContext';
 import { useHistory } from 'react-router';
-import { ConfirmRequestDialog } from './confirmRequestDialog/ConfirmRequestDialog';
+import ConfirmRequestDialog, { ConfirmRequestDialogType } from './confirmRequestDialog/ConfirmRequestDialog';
 import Search from '../../../../assets/img/search.svg';
+import { useApiErrorHandler } from '../../../../hooks/apiErrorHandlerHook';
 
 const Request = () => {
 
@@ -21,7 +22,8 @@ const Request = () => {
   const {party, partyLoaded} = useContext(PartyContext);
   const history = useHistory();
   const textInputRef = useRef<TextInput>(null);
-  const confirmRequestDialogRef = useRef<ConfirmRequestDialog>(null);
+  const confirmRequestDialogRef = useRef<ConfirmRequestDialogType>(null);
+  const apiErrorHandler = useApiErrorHandler();
 
   const fetchSearchResults = useCallback(throttle(throttleRate, (searchTerm: string) => {
     if (!party) {
@@ -29,14 +31,13 @@ const Request = () => {
     }
 
     searchTerm.trim();
-    searchTracks(searchTerm, party.token)
-      .then((results) => {
-        if (searchTerm) {
-          setTracks(results);
-        }
-      }).catch((e) => {
-        console.error(e);
-      });
+
+    apiErrorHandler(async () => {
+      const results = await searchTracks(searchTerm);
+      if (searchTerm) {
+        setTracks(results);
+      }
+    });
   }), [party]);
 
   useEffect(() => {

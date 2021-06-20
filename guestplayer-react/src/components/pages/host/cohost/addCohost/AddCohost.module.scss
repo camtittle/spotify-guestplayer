@@ -1,0 +1,81 @@
+.container {
+    flex-grow: 1;
+}
+
+.actionBarContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 8rem 2rem 3rem 2rem;
+}
+
+.shareLinkInput {
+    position: absolute;
+    top: -100px;
+    opacity: 0;
+}
+
+.qrContainer {
+    position: relative;
+    text-align: center;
+    height: 1px;
+    transform: translateY(-5.5rem);
+    z-index: 2;
+
+    p {
+        font-size: 0.75rem;
+        margin-top: 0.4rem;
+    }
+}
+
+.qrCode {
+    position: relative;
+    width: 11rem;
+    height: 11rem;
+    background-color: white;
+    margin: 0 auto;
+
+    img {
+        width: 100%;
+        opacity: 0;
+        transition: opacity 2s;
+    }
+}
+
+.qrCode>img.loaded {
+    opacity: 1;
+}
+
+.container {
+
+    padding: 22px;
+
+    h1 {
+        font-size: 24px;
+        font-weight: 500;
+
+    }
+
+    .warning {
+        background-color: #BF1B1B;
+        margin-top: 24px;
+        border-radius: 4px;
+        padding: 18px;
+        text-align: center;
+
+        h2 {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        p {
+            font-size: 14px;
+            margin: 12px 0 12px 0;
+        }
+
+        .inviteGuestsLink {
+            margin: 12px 0 12px 0;
+            max-width: 70%;
+        }
+    }
+}

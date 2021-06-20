@@ -31,7 +31,7 @@ const Menu = ({ visible, onClose, menuItems }: MenuProps) => {
     }
 
     return (
-      <button className={styles.menuItem} onClick={onClick}>
+      <button className={styles.menuItem} onClick={onClick} key={item.label}>
         <span className={styles.icon} style={style}></span>
         <span className={styles.label}>{item.label}</span>
       </button>

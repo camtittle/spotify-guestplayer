@@ -7,6 +7,7 @@ namespace Domain.Enums
     public enum ItemType
     {
         Party,
-        Request
+        Request,
+        RefreshToken
     }
 }

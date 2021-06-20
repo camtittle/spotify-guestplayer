@@ -2,6 +2,7 @@
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Interfaces.Services;
+using guestplayer_server.Constants;
 using guestplayer_server.Helpers;
 using guestplayer_server.Models;
 using Microsoft.AspNetCore.Http;
@@ -20,11 +21,29 @@ namespace guestplayer_server.Controllers
 
         private readonly IPartyService _partyService;
         private readonly JwtService _jwtService;
+        private readonly IRefreshTokenService _refreshTokenService;
 
-        public PartyController(IPartyService partyService, JwtService jwtService)
+        public PartyController(IPartyService partyService, JwtService jwtService, IRefreshTokenService refreshTokenService)
         {
             _partyService = partyService;
             _jwtService = jwtService;
+            _refreshTokenService = refreshTokenService;
+        }
+
+        private async Task GenerateRefreshToken(string partyId, string userId, Role role)
+        {
+            var refreshToken = await _refreshTokenService.CreateRefreshToken(partyId, userId, role);
+
+            // Add refresh token as cookie
+            var cookieOptions = new CookieOptions
+            {
+                Secure = true,
+                HttpOnly = true,
+                SameSite = SameSiteMode.None, // This is fine because we have CORS,
+                Expires = new DateTimeOffset(DateTime.UtcNow.AddDays(7))
+            };
+
+            Response.Cookies.Append(AuthConstants.REFRESH_TOKEN_COOKIE, refreshToken, cookieOptions);
         }
 
         [HttpPost("create")]
@@ -50,7 +69,9 @@ namespace guestplayer_server.Controllers
 
             var party = await _partyService.CreateParty(partyParams);
 
-            var jwt = _jwtService.generateJwt(party.PartyId, JwtRole.HOST);
+            var userId = Guid.NewGuid().ToString();
+            var jwt = _jwtService.generateJwt(party.PartyId, userId, JwtRole.HOST);
+            await GenerateRefreshToken(party.Id, userId, Role.Host);
 
             var response = new PartyResponse()
             {
@@ -75,15 +96,40 @@ namespace guestplayer_server.Controllers
 
             var party = await _partyService.GetParty(id);
 
-            if (party == null)
+            if (party == null || party.Ended)
             {
-                return NotFound();
+                return BadRequest(new ErrorResponse(ErrorCodes.PARTY_ENDED));
             }
 
             var response = new PartySummary
             {
                 Id = id,
                 Name = party.Name
+            };
+
+            return Ok(response);
+        }
+
+        [HttpGet("{id}/cohost/token")]
+        [Authorize(Role.Host)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<PartySummary>> GetCohostJoinToken(string id)
+        {
+            if (id == null)
+            {
+                return BadRequest();
+            }
+
+            var party = await _partyService.GetParty(id);
+
+            if (party == null || party.Ended)
+            {
+                return BadRequest(new ErrorResponse(ErrorCodes.PARTY_ENDED));
+            }
+
+            var response = new PartyCohostJoinTokenResponse
+            {
+                JoinToken = party.CohostJoinToken
             };
 
             return Ok(response);
@@ -99,9 +145,9 @@ namespace guestplayer_server.Controllers
 
             var party = await _partyService.GetParty(partyId);
 
-            if (party == null)
+            if (party == null || party.Ended)
             {
-                return NotFound();
+                return BadRequest(new ErrorResponse(ErrorCodes.PARTY_ENDED));
             }
 
             await _partyService.LeaveParty(userId, party);
@@ -142,7 +188,9 @@ namespace guestplayer_server.Controllers
             {
                 var party = await _partyService.JoinParty(id);
 
-                var jwt = _jwtService.generateJwt(party.PartyId, JwtRole.GUEST);
+                var userId = Guid.NewGuid().ToString();
+                var jwt = _jwtService.generateJwt(party.PartyId, userId, JwtRole.GUEST);
+                await GenerateRefreshToken(party.Id, userId, Role.Guest);
 
                 var response = new PartyResponse()
                 {
@@ -157,7 +205,54 @@ namespace guestplayer_server.Controllers
 
             } catch (NotFoundException)
             {
-                return BadRequest("Party not found");
+                return BadRequest(new ErrorResponse(ErrorCodes.PARTY_ENDED));
+            }
+        }
+
+        [HttpPost("{id}/cohost")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult> CohostParty(string id, [FromBody] CohostPartyRequest request)
+        {
+            if (id == null)
+            {
+                return BadRequest("Id required");
+            }
+
+            if (request == null || request.JoinToken == null)
+            {
+                return BadRequest("JoinToken required");
+            }
+
+            try
+            {
+                var userId = Guid.NewGuid().ToString();
+                var party = await _partyService.AddCohost(id, userId, request.JoinToken);
+
+                var jwt = _jwtService.generateJwt(party.PartyId, userId, JwtRole.COHOST);
+                await GenerateRefreshToken(party.Id, userId, Role.Cohost);
+
+                var response = new PartyResponse()
+                {
+                    Id = party.PartyId,
+                    Name = party.Name,
+                    GuestCount = party.GuestCount,
+                    Token = jwt,
+                    Role = JwtRole.COHOST
+                };
+
+                return Ok(response);
+
+            }
+            catch (NotFoundException)
+            {
+                return NotFound();
+            } catch (PartyEndedException)
+            {
+                return BadRequest(new ErrorResponse(ErrorCodes.PARTY_ENDED));
+            } catch (TokenInvalidException)
+            {
+                return BadRequest("Invalid join token");
             }
         }
     }

@@ -15,6 +15,7 @@ namespace Business
         {
             services.AddScoped<IPartyService, PartyService>();
             services.AddScoped<ITrackRequestService, TrackRequestService>();
+            services.AddScoped<IRefreshTokenService, RefreshTokenService>();
         }
     }
 }

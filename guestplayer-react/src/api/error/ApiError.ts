@@ -5,6 +5,7 @@ export class ApiError extends Error {
   public statusCode: number;
   public body?: any;
   public errorCode?: ErrorCode;
+  public isApiError = true;
 
   constructor(statusCode: number, body?: any) {
     super();
@@ -15,7 +16,5 @@ export class ApiError extends Error {
       this.errorCode = body.errorCode;
     }
   }
-
-  
 
 }

@@ -1,0 +1,94 @@
+@import '_colours';
+
+.loadingContainer {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+
+    div {
+        text-align: center;
+    }
+}
+
+.cardsContainer {
+    padding: 18px 12px;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.requestCard {
+    width: 100%;
+    margin-bottom: 8px;
+    border-radius: 3px;
+}
+
+.buttonsContainer {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+}
+
+.trashButton {
+    width: 27px;
+    height: 27px;
+    border: none;
+    cursor: pointer;
+    background-image: url('../../../../assets/img/trash.svg');
+    background-color: transparent;
+    background-size: 16px;
+    background-repeat: no-repeat;
+    background-position-y: center;
+    transition: transform 0.1s;
+
+    &:hover {
+        background-image: url('../../../../assets/img/trash-grey.svg');
+    }
+
+    &:active {
+        transform: scale(0.98);
+    }
+}
+
+.trackListItem {
+    background-color: transparent;
+}
+
+.help {
+    text-align: left;
+    padding: 18px 18px 0 18px;
+
+    h2 {
+        font-size: 18px;
+        font-weight: 500;
+        color: $spotify_green;
+    }
+
+    p {
+        font-size: 14px;
+        color: $grey-30;
+        margin-top: 8px;
+    }
+}
+
+.fadeAppear {
+    opacity: 0.01;
+}
+
+.fadeAppearActive {
+    opacity: 1;
+    transition: opacity 0.4s;
+}
+
+.slideExit {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+}
+
+.slideExitActive {
+    transform: translate3d(110%, 0, 0);
+    transition: transform 0.3s, opacity 0.3s;
+    opacity: 0;
+}

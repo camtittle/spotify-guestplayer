@@ -1,3 +1,5 @@
 export enum ErrorCode {
-  ActivePlayerDeviceNotFound = 'ActivePlayerDeviceNotFound'
+  ActivePlayerDeviceNotFound = 'ActivePlayerDeviceNotFound',
+  PartyEnded = 'PartyEnded',
+  TooManyPendingRequests = 'TooManyPendingRequests'
 }

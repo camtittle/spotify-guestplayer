@@ -1,81 +1,100 @@
-import { Component, useEffect, useRef, useState } from 'react';
+import { Component, createRef, useEffect, useRef, useState } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import LoadingSpinner from '../loadingSpinner/LoadingSpinner';
 import styles from './Toast.module.scss';
 
-export enum ToastState {
-  Disabled = 'Disabled',
+export enum ToastStyle {
   Loading = 'Loading',
   Success = 'Success',
   Error = 'Error'
 }
 
-interface ToastProps {
-  state: ToastState,
-  label: string
+export interface ToastNotification {
+  style: ToastStyle,
+  text: string;
 }
 
-const Toast = (props: ToastProps) => {
+interface ToastProps {
+  notification?: ToastNotification;
+}
 
-  const [visible, setVisible] = useState(false);
-  let timeoutRef = useRef<NodeJS.Timeout>();
 
-  const duration = 5000;
+class Toast extends Component {
 
-  useEffect(() => {
-    if (props.state === ToastState.Error || props.state === ToastState.Success || props.state === ToastState.Loading) {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-      timeoutRef.current = setTimeout(() => {
-        setVisible(false);
-      }, duration);
-      setVisible(true);
-    } else if (props.state === ToastState.Disabled) {
-      setVisible(false);
-    }
-  }, [props.state]);
+  private duration = 5000;
+  private timeoutRef: NodeJS.Timeout | undefined;
+  private notification: ToastNotification | undefined;
 
-  const classNames = [styles.toast];
-  switch (props.state) {
-    case ToastState.Loading:
-      classNames.push(styles.loading);
-      break;
-    case ToastState.Error:
-      classNames.push(styles.error);
-      break;
-    case ToastState.Success:
-      classNames.push(styles.success);
-      break;
+  state = {
+    visible: false
   }
 
-  return (
-    <CSSTransition in={visible} timeout={300} mountOnEnter unmountOnExit classNames={{
-      enter: styles.enter,
-      enterActive: styles.enterActive,
-      exit: styles.exit,
-      exitActive: styles.exitActive
-    }}>
-      <div className={classNames.join(' ')}>
-        <span className={styles.iconContainer}>
-          {props.state === ToastState.Loading &&
-            <LoadingSpinner color="white" className={styles.loadingSpinner} />
-          }
+  constructor(props: any) {
+    super(props);
+  }
 
-          {props.state === ToastState.Success &&
-            <span className={styles.tickIcon}></span>
-          }
+  private setVisible(visible: boolean) {
+    this.setState({
+      visible
+    });
+  }
 
-          {props.state === ToastState.Error &&
-            <span className={styles.errorIcon}></span>
-          }
+  showToast(toast?: ToastNotification) {
+    if (toast) {
+      this.notification = toast;
+      if (this.timeoutRef) {
+        clearTimeout(this.timeoutRef);
+      }
+      this.timeoutRef = setTimeout(() => {
+        this.setVisible(false);
+      }, this.duration);
+      this.setVisible(true);
+    } else {
+      this.setVisible(false);
+    }
+  }
 
-        </span>
-        <span className={styles.label}>{props.label}</span>
-      </div>
-    </CSSTransition>
-  )
+  render() {
+    const classNames = [styles.toast];
+    switch (this.notification?.style) {
+      case ToastStyle.Loading:
+        classNames.push(styles.loading);
+        break;
+      case ToastStyle.Error:
+        classNames.push(styles.error);
+        break;
+      case ToastStyle.Success:
+        classNames.push(styles.success);
+        break;
+    }
 
+    return (
+      <CSSTransition in={this.state.visible} timeout={300} mountOnEnter unmountOnExit classNames={{
+        enter: styles.enter,
+        enterActive: styles.enterActive,
+        exit: styles.exit,
+        exitActive: styles.exitActive
+      }}>
+        <div className={classNames.join(' ')}>
+          <span className={styles.iconContainer}>
+            {this.notification?.style === ToastStyle.Loading &&
+              <LoadingSpinner color="white" className={styles.loadingSpinner} />
+            }
+
+            {this.notification?.style === ToastStyle.Success &&
+              <span className={styles.tickIcon}></span>
+            }
+
+            {this.notification?.style === ToastStyle.Error &&
+              <span className={styles.errorIcon}></span>
+            }
+
+          </span>
+          <span className={styles.label}>{this.notification?.text}</span>
+        </div>
+      </CSSTransition>
+    )
+  }
 }
 
 export default Toast;

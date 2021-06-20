@@ -1,0 +1,54 @@
+@import '_colours';
+
+.steps {
+    padding: 0 1.5em;
+    flex-grow: 1;
+    margin-bottom: 1rem;
+    width: 100%;
+
+    h3 {
+        color: $spotify_green;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        margin: 1.5rem 0 0.5rem 0;
+        font-size: 1.125rem;
+    
+        .stepNumber {
+            display: inline-block;
+            color: $spotify_green;
+            font-size: 0.6rem;
+            border: $spotify_green 1px solid;
+            border-radius: 50%;
+            height: 1.5rem;
+            width: 1.5rem;
+            padding-left: 0.55rem;
+            padding-top: 0.3rem;
+            margin-right: 0.5rem;
+        }
+    }
+    
+    p {
+        width: 90%;
+    }
+    
+    h2 {
+        font-weight: 500;
+        margin: 1em 0;
+    }
+}
+
+.enter {
+    opacity: 0;
+}
+
+.enterActive {
+    opacity: 1;
+    transition: opacity 1s ease;
+
+    @for $i from 1 through 4 {
+        &:nth-child(#{$i}) {
+            transition-delay: 0.3s * ($i);
+        }
+    }
+}

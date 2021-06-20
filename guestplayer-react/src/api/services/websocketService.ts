@@ -1,5 +1,6 @@
 import * as signalR from '@microsoft/signalr';
 import { v4 as generateUuid } from 'uuid';
+import * as TokenManager from '../auth/tokenManager';
 
 export type Listener<TData> = (data: TData) => void;
 export type Subscription = {
@@ -18,10 +19,12 @@ export namespace WebsocketService {
 
   const subs: { [methodName: string]: Subscription[] } = {};
   
-  const initConnection = (token: string) => {
+  const initConnection = async (): Promise<void> => {
     if (connection) {
       return;
     }
+
+    const token = await TokenManager.getBearerToken();
   
     connection = new signalR.HubConnectionBuilder()
       .withUrl(partyHubUrl)
@@ -77,8 +80,8 @@ export namespace WebsocketService {
     }
   }
   
-  export const subscribe = <TData>(token: string, method: string, callback: Listener<TData>): Subscription => {
-    initConnection(token);
+  export const subscribe = async <TData>(method: string, callback: Listener<TData>): Promise<Subscription> => {
+    await initConnection();
     return addSubscription(method, callback);
   };
   

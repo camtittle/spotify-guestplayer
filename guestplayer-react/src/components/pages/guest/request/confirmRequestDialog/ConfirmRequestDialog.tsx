@@ -1,12 +1,16 @@
-import React, { Component, Fragment, MouseEventHandler, useContext } from 'react';
+import React, { Component, Fragment } from 'react';
 import { CSSTransition } from 'react-transition-group';
+import { ErrorCode } from '../../../../../api/error/ErrorCodes';
 import { requestTrack } from '../../../../../api/services/requestService';
 import { ToastContext } from '../../../../../contexts/toastContext';
+import { withHistory } from '../../../../../hocs/withHistory';
+import { ApiErrorHandler, withApiErrorHandler } from '../../../../../hooks/apiErrorHandlerHook';
 import { Party } from '../../../../../models/Party';
 import { Track } from '../../../../../models/Track';
 import { Button, ButtonSize, ButtonStyle } from '../../../../shared/button/Button';
 import FlexContainer from '../../../../shared/container/FlexContainer';
-import { ToastState } from '../../../../shared/toast/Toast';
+import Dialog from '../../../../shared/dialog/Dialog';
+import { ToastStyle } from '../../../../shared/toast/Toast';
 import TrackListItem from '../../../../shared/trackListItem/TrackListItem';
 import styles from './ConfirmRequestDialog.module.scss';
 
@@ -17,14 +21,17 @@ interface ConfirmRequestState {
 
 interface ConfirmRequestProps {
   party: Party;
+  apiErrorHandler: ApiErrorHandler;
+  history: any;
 }
 
-export class ConfirmRequestDialog extends Component<ConfirmRequestProps, ConfirmRequestState> {
+export class ConfirmRequestDialogType extends Component<ConfirmRequestProps, ConfirmRequestState> {
 
   static contextType = ToastContext;
   context!: React.ContextType<typeof ToastContext>;
 
   dialogRef: React.RefObject<HTMLDivElement>;
+  tooManyRequestsDialogRef: React.RefObject<Dialog>;
 
   constructor(props: ConfirmRequestProps) {
     super(props);
@@ -34,6 +41,7 @@ export class ConfirmRequestDialog extends Component<ConfirmRequestProps, Confirm
     };
 
     this.dialogRef = React.createRef<HTMLDivElement>();
+    this.tooManyRequestsDialogRef = React.createRef<Dialog>();
   }
 
   public show = (track: Track) => {
@@ -41,13 +49,27 @@ export class ConfirmRequestDialog extends Component<ConfirmRequestProps, Confirm
       visible: true,
       track: track
     });
-  }
+  };
   
   onClose = () => {
     this.setState({
       visible: false
     });
-  }
+  };
+
+  closeTooManyRequestsDialog = () => {
+    this.tooManyRequestsDialogRef.current?.hide();
+  };
+
+  showTooManyRequestsDialog = () => {
+    this.onClose();
+    this.tooManyRequestsDialogRef.current?.show();
+    this.context.showToast(undefined);
+  };
+
+  onClickViewRequests = () => {
+    this.props.history.push('/party/guest/requests')
+  };
 
   onConfirm = () => {
     if (!this.state.track) {
@@ -58,12 +80,25 @@ export class ConfirmRequestDialog extends Component<ConfirmRequestProps, Confirm
       visible: false
     });
 
-    this.context.setToastState(ToastState.Loading, 'Requesting track');
+    this.context.showToast({
+      style: ToastStyle.Loading,
+      text: 'Requesting track'
+    });
     
-    requestTrack(this.state.track.spotifyId, this.props.party.token).then(() => {
-      this.context.setToastState(ToastState.Success, 'Track requested');
-    }).catch(() => {
-      this.context.setToastState(ToastState.Error, 'Something went wrong');
+    this.props.apiErrorHandler(async () => {
+      try {
+        await requestTrack(this.state.track.spotifyId);
+        this.context.showToast({
+          style: ToastStyle.Success,
+          text: 'Track requested'
+        });
+      } catch (e) {
+        if (e.isApiError && e.errorCode === ErrorCode.TooManyPendingRequests) {
+          this.showTooManyRequestsDialog();
+        } else {
+          throw e;
+        }
+      }
     });
   }
   
@@ -89,7 +124,19 @@ export class ConfirmRequestDialog extends Component<ConfirmRequestProps, Confirm
             </div>
           </FlexContainer>
         </CSSTransition>
+
+        <Dialog
+          title="Too many requests"
+          body="Oops! You can only have 5 pending requests at a time. Once the host accepts or rejects your requests you can make more."
+          primaryLabel="OK"
+          onClickPrimary={this.closeTooManyRequestsDialog}
+          secondaryLabel="View requests"
+          onClickSecondary={this.onClickViewRequests}
+          ref={this.tooManyRequestsDialogRef}
+        />
       </Fragment>
     );
   }
 }
+
+export default withApiErrorHandler(withHistory(ConfirmRequestDialogType));

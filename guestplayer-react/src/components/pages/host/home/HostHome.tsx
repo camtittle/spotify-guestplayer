@@ -5,6 +5,7 @@ import PartyHome from "../../../shared/partyHome/PartyHome";
 import styles from './HostHome.module.scss';
 import MusicalNotes from '../../../../assets/img/musical-note.svg';
 import LogoutIcon from '../../../../assets/img/logout.svg';
+import UserIcon from '../../../../assets/img/user.svg';
 import Share from '../../../../assets/img/share.svg';
 import { Role } from "../../../../api/models/role";
 import { getTrackRequestCount, subscribeToTrackRequests, unsubscribeFromTrackRequests } from "../../../../api/services/requestService";
@@ -12,13 +13,15 @@ import { Subscription } from "../../../../api/services/websocketService";
 import { MenuItem } from "../../../shared/titleBar/menu/Menu";
 import Dialog from "../../../shared/dialog/Dialog";
 import { endParty } from "../../../../api/services/partyService";
+import { useApiErrorHandler } from "../../../../hooks/apiErrorHandlerHook";
 
 export default function HostHome() {
 
   const { party, partyLoaded, setParty } = useContext(PartyContext);
-  const [requestCount , setRequestCount] = useState<number>(0);
+  const [requestCount, setRequestCount] = useState<number>(0);
   const history = useHistory();
   const endPartyDialogRef = useRef<Dialog>(null);
+  const handleApiError = useApiErrorHandler();
 
   useEffect(() => {
 
@@ -30,16 +33,17 @@ export default function HostHome() {
       } else if (party.role === Role.Guest) {
         history.push('/party/guest')
       } else {
-        trackRequestsSubscription = subscribeToTrackRequests(party.token, (request) => {
+        subscribeToTrackRequests(party.token, (request) => {
           setRequestCount((count) => {
             return count + 1;
           })
+        }).then(subscription => {
+          trackRequestsSubscription = subscription;
         });
 
-        getTrackRequestCount(party.token).then(count => {
+        handleApiError(async () => {
+          const count = await getTrackRequestCount();
           setRequestCount(count);
-        }).catch(e => {
-          console.log(e);
         });
       }
     }
@@ -80,6 +84,13 @@ export default function HostHome() {
 
   const menuItems: MenuItem[] = [
     {
+      label: 'Add Co-host',
+      icon: UserIcon,
+      onClick: () => {
+        history.push('/party/cohost/intro');
+      }
+    },
+    {
       label: 'End party',
       icon: LogoutIcon,
       onClick: () => {
@@ -95,7 +106,7 @@ export default function HostHome() {
 
     endPartyDialogRef.current?.hide();
     setParty(undefined);
-    await endParty(party.token);
+    await endParty();
   };
 
   return (
