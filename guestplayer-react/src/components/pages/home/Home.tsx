@@ -29,9 +29,11 @@ export default function Home() {
   useEffect(() => {
     if (party) {
       if (party.role === Role.Guest) {
-        history.push('/party/guest')
+        history.push('/party/guest');
       } else if (party.role === Role.Host) {
-        history.push('/party/host')
+        history.push('/party/host');
+      } else if (party.role === Role.Cohost) {
+        history.push('/party/cohost');
       }
     }
   }, [party]);

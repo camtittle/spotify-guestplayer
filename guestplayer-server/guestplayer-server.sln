@@ -12,9 +12,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spotify", "Spotify\Spotify.
 		{385A4FE5-98A2-45C7-BF09-E331380DF678} = {385A4FE5-98A2-45C7-BF09-E331380DF678}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database", "Database\Database.csproj", "{B50C38B7-11FD-4B2C-9334-B168FFF030B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Database", "Database\Database.csproj", "{B50C38B7-11FD-4B2C-9334-B168FFF030B5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Business", "Business\Business.csproj", "{C23C8CCA-6F04-46CD-BF7F-545CC495985D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Business", "Business\Business.csproj", "{C23C8CCA-6F04-46CD-BF7F-545CC495985D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Push", "Push\Push.csproj", "{DEC3D6A5-AAE3-41FC-87F2-6110240C29E5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,6 +44,10 @@ Global
 		{C23C8CCA-6F04-46CD-BF7F-545CC495985D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C23C8CCA-6F04-46CD-BF7F-545CC495985D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C23C8CCA-6F04-46CD-BF7F-545CC495985D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEC3D6A5-AAE3-41FC-87F2-6110240C29E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEC3D6A5-AAE3-41FC-87F2-6110240C29E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEC3D6A5-AAE3-41FC-87F2-6110240C29E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEC3D6A5-AAE3-41FC-87F2-6110240C29E5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -18,6 +18,7 @@ export function useApiErrorHandler(): ApiErrorHandler {
     console.log(error.errorCode);
     if (error.errorCode === ErrorCode.PartyEnded) {
       partyContext.setParty(undefined);
+      toastContext.showToast(undefined);
 
       // Timeout delay allows page transition to happen before showing dialog, reducing UI lag
       setTimeout(() => {
@@ -30,6 +31,7 @@ export function useApiErrorHandler(): ApiErrorHandler {
   }
 
   const handleGenericErrors = (error: any): boolean => {
+    console.error(error);
     toastContext.showToast({
       style: ToastStyle.Error,
       text: 'Something went wrong. Please try again.'

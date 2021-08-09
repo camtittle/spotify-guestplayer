@@ -1,0 +1,74 @@
+@import '_colours';
+
+.container {
+    position: absolute;
+    width: 100%;
+    padding: 8px;
+    z-index: 99999;
+}
+
+.notification {
+    background-color: $grey-60;
+    width: 100%;
+    border-radius: 4px;
+    box-shadow: rgba(0, 0, 0, 0.514) 0px 4px 6px;
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    cursor: pointer;
+    border: none;
+    color: white;
+    text-align: left;
+
+    &:hover {
+        background-color: #3a3a3a;
+    }
+
+    .image {
+        width: 41px;
+        height: 41px;
+        background-color: white;
+    }
+
+    .labels {
+        margin-left: 10px;
+        flex-grow: 1;
+    }
+
+    h2 {
+        font-weight: 500;
+        font-size: 14px;
+    }
+
+    p {
+        font-size: 14px;
+        color: $grey-30;
+        margin-top: 2px;
+    }
+
+    .arrow {
+        width: 26px;
+        height: 16px;
+        background-image: url('../../../../assets/img/right.svg');
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+}
+
+.enter {
+    transform: translate3d(0, -100%, 0);
+}
+
+.enterActive {
+    transform: translate3d(0, 0, 0);
+    transition: transform 0.3s;
+}
+
+.exit {
+    transform: translate3d(0, 0, 0);
+}
+
+.exitActive {
+    transform: translate3d(0, -100%, 0);
+    transition: transform 0.3s;
+}

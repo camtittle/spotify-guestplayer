@@ -34,7 +34,13 @@ namespace Business.Services
                 GuestCount = 0,
                 SpotifyCredentials = partyParams.SpotifyCredentials,
                 CohostJoinToken = Guid.NewGuid().ToString(),
-            CreatedAt = DateTime.UtcNow,
+                Host = new User()
+                {
+                    UserId = partyParams.HostUserId,
+                    PushSubscription = null
+                },
+                Cohosts = new List<User>(),
+                CreatedAt = DateTime.UtcNow,
                 LastUpdated = DateTime.UtcNow
             };
 
@@ -86,7 +92,13 @@ namespace Business.Services
 
         public async Task LeaveParty(string userId, Party party)
         {
-            if (party.GuestCount > 0)
+            var cohostIndex = party.Cohosts.FindIndex(x => x.UserId == userId);
+            if (cohostIndex > -1)
+            {
+                party.Cohosts.RemoveAt(cohostIndex);
+            }
+
+            else if (party.GuestCount > 0)
             {
                 party.GuestCount--;
             }
@@ -113,8 +125,10 @@ namespace Business.Services
                 throw new TokenInvalidException();
             }
 
-            party.CohostJoinToken = Guid.NewGuid().ToString();
-            party.Cohosts.Add(userId);
+            party.Cohosts.Add(new User() {
+                UserId = userId,
+                PushSubscription = null
+            });
             await _partyRepository.PutParty(party);
 
             return party;

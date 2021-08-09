@@ -8,6 +8,7 @@ namespace Domain.Enums
     {
         Party,
         Request,
-        RefreshToken
+        RefreshToken,
+        PushSubscription
     }
 }

@@ -11,21 +11,35 @@ let _bearerToken: {
 };
 
 export const setBearerToken = (token: string) => {
-  console.log('set bearer token');
   const decoded = jwtDecode<JwtToken>(token);
   const expiry = new Date(decoded.exp * 1000);
   _bearerToken = {
     token,
     expiry: expiry.toISOString()
   };
-
-  console.log('set Bearer token, expiry: ' + expiry.toISOString());
 };
 
-const refreshToken = async () => {
-  console.log('Refreshing token...');
+let busyFlag = false;
+const refreshToken = async (): Promise<void> => {
+
+  // If another call to refreshToken is already running, we just wait for that one to complete,
+  // then return as we don't want to make 2 calls
+  if (busyFlag) {
+    return new Promise(resolve => {
+
+      const interval = setInterval(() => {
+        if (!busyFlag) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 100)
+    })
+  }
+
+  busyFlag = true;
   const response = await post<RefreshTokenResponse>('/token/refresh', undefined, undefined, undefined, true);
   setBearerToken(response.token);
+  busyFlag = false;
 };
 
 export const getBearerToken = async (): Promise<string | undefined> => {
@@ -35,7 +49,6 @@ export const getBearerToken = async (): Promise<string | undefined> => {
 
   const now = addMinutes(new Date(), 5).toISOString();
   
-  console.log({ now, exp: _bearerToken.expiry });
   const tokenExpired = now > _bearerToken.expiry;
   if (tokenExpired) {
     await refreshToken();

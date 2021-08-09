@@ -6,6 +6,7 @@ using Domain.Interfaces.Respoitories;
 using Domain.Interfaces.Services;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,13 +18,47 @@ namespace Business.Services
         private readonly IHostSpotifyService _hostSpotifyService;
         private readonly IPartyRepository _partyRepository;
         private readonly IWebsocketService _websocketService;
+        private readonly IPushNotificationService _pushNotificationService;
 
-        public TrackRequestService(IGuestSpotifyService spotifyService, IHostSpotifyService hostSpotifyService, IPartyRepository partyRepository, IWebsocketService websocketService)
+        public TrackRequestService(IGuestSpotifyService spotifyService, IHostSpotifyService hostSpotifyService, IPartyRepository partyRepository, IWebsocketService websocketService, IPushNotificationService pushNotificationService)
         {
             _guestSpotifyService = spotifyService;
             _hostSpotifyService = hostSpotifyService;
             _partyRepository = partyRepository;
             _websocketService = websocketService;
+            _pushNotificationService = pushNotificationService;
+
+        }
+
+        private async Task SendTrackRequestPushNotifications(Party party, TrackRequest trackRequest)
+        {
+            var usersToNotify = new List<User>(party.Cohosts)
+            {
+                party.Host
+            };
+            var subscriptions = usersToNotify.Select(x => x.PushSubscription).Where(x => x != null);
+
+            var tasks = subscriptions.Select(subscription =>
+            {
+                var sendParams = new SendPushParams<TrackRequest>()
+                {
+                    PushSubscription = subscription,
+                    Type = PushNotificationType.TrackRequest,
+                    Data = trackRequest
+                };
+
+                try
+                {
+                    return _pushNotificationService.Send(sendParams);
+                } catch (Exception e)
+                {
+                    // Silently swallow error as we dont want failing push notifs to make the HTTP request error
+                    Console.WriteLine(e.ToString());
+                    return Task.CompletedTask;
+                }
+            });
+
+            await Task.WhenAll(tasks);
         }
 
         public async Task<TrackRequest> CreateTrackRequest(CreateTrackRequestParams createParams)
@@ -51,9 +86,12 @@ namespace Business.Services
                 AcceptedAt = null
             };
 
-            await _partyRepository.PutTrackRequest(trackRequest);
-
-            await _websocketService.NotifyAdminOfTrackRequest(trackRequest);
+            await Task.WhenAll(new Task[]
+            {
+                _partyRepository.PutTrackRequest(trackRequest),
+                _websocketService.NotifyAdminOfTrackRequest(trackRequest),
+                SendTrackRequestPushNotifications(createParams.Party, trackRequest)
+            });
 
             return trackRequest;
         }

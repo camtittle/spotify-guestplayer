@@ -56,9 +56,11 @@ namespace guestplayer_server.Controllers
                 return BadRequest(ModelState.ValidationState);
             }
 
+            var userId = Guid.NewGuid().ToString();
             var partyParams = new CreatePartyParams()
             {
                 PartyName = request.Name,
+                HostUserId = userId,
                 SpotifyCredentials = new Domain.Entities.SpotifyCredentials()
                 {
                     AccessToken = request.SpotifyCredentials.AccessToken,
@@ -69,7 +71,6 @@ namespace guestplayer_server.Controllers
 
             var party = await _partyService.CreateParty(partyParams);
 
-            var userId = Guid.NewGuid().ToString();
             var jwt = _jwtService.generateJwt(party.PartyId, userId, JwtRole.HOST);
             await GenerateRefreshToken(party.Id, userId, Role.Host);
 
@@ -136,7 +137,7 @@ namespace guestplayer_server.Controllers
         }
 
         [HttpPost("leave")]
-        [Authorize(Role.Guest)]
+        [Authorize(Role.Guest, Role.Cohost)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<ActionResult> LeaveParty()
         {
@@ -212,7 +213,7 @@ namespace guestplayer_server.Controllers
         [HttpPost("{id}/cohost")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> CohostParty(string id, [FromBody] CohostPartyRequest request)
+        public async Task<ActionResult> CohostJoinParty(string id, [FromBody] CohostPartyRequest request)
         {
             if (id == null)
             {

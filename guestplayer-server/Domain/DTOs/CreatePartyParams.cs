@@ -8,6 +8,7 @@ namespace Domain.DTOs
     public class CreatePartyParams
     {
         public string PartyName { get; set; }
+        public string HostUserId { get; set; }
         public SpotifyCredentials SpotifyCredentials { get; set; }
     }
 }

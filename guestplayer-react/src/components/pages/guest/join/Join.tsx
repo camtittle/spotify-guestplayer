@@ -7,16 +7,22 @@ import { Button, ButtonStyle } from "../../../shared/button/Button";
 import MusicalNoteIcon from '../../../../assets/img/musical-note.svg';
 import InformationIcon from '../../../../assets/img/information.svg';
 import { useContext, useEffect, useState } from "react";
-import { getPartySummary, joinParty } from "../../../../api/services/partyService";
+import { cohostParty, getPartySummary, joinParty } from "../../../../api/services/partyService";
 import { PartySummary } from "../../../../models/PartySummary";
 import LoadingSpinner from "../../../shared/loadingSpinner/LoadingSpinner";
 import { CSSTransition } from "react-transition-group";
 import './JoinTransitions.scss';
 import Tick from '../../../../assets/img/tick.svg';
 import { PartyContext } from "../../../../contexts/partyContext";
+import { useApiErrorHandler } from "../../../../hooks/apiErrorHandlerHook";
 
 interface JoinParams {
   id: string;
+  cohostJoinToken: string;
+}
+
+interface JoinProps {
+  type: 'guest' | 'cohost'
 }
 
 enum LoadingState {
@@ -27,22 +33,21 @@ enum LoadingState {
   Joined
 }
 
-export default function Join(): JSX.Element {
+export default function Join({ type }: JoinProps): JSX.Element {
 
-  const { id } = useParams<JoinParams>();
+  const { id, cohostJoinToken } = useParams<JoinParams>();
   const history = useHistory();
   const [partyToJoin, setPartyToJoin] = useState<PartySummary>();
   const [loadingState, setLoadingState] = useState<LoadingState>(LoadingState.Loading);
   const { party, setParty } = useContext(PartyContext);
+  const apiErrorHandler = useApiErrorHandler();
 
   useEffect(() => {
     getPartySummary(id).then((party) => {
       setPartyToJoin(party);
-      setTimeout(() => {
-        setLoadingState(LoadingState.Loaded);
-      }, 1000);
+      setLoadingState(LoadingState.Loaded);
     }).catch((e) => {
-      console.error(e)
+      console.error(e);
       setLoadingState(LoadingState.Error);
     });
 
@@ -55,19 +60,45 @@ export default function Join(): JSX.Element {
   const onJoined = () => {
     setLoadingState(LoadingState.Joined);
     setTimeout(() => {
-      history.push('/party/guest');
+      if (type === 'guest') {
+        history.push('/party/guest');
+      } else if (type === 'cohost') {
+        history.push('/party/cohost');
+      }
     }, 1000);
   }
 
-  const onClickJoin = () => {
+  const joinAsGuest = async (partyId: string) => {
+    const party = await joinParty(partyId);
+    setParty(party);
+    onJoined();
+  }
+
+  const joinAsCohost = async (partyId: string) => {
+    if (!cohostJoinToken) {
+      setLoadingState(LoadingState.Error);
+    }
+    const party = await cohostParty(partyId, cohostJoinToken);
+    setParty(party);
+    onJoined();
+  }
+
+  const onClickJoin = async () => {
     if (partyToJoin?.id) {
       setLoadingState(LoadingState.Joining);
-      setTimeout(() => {
-        joinParty(partyToJoin.id).then((party) => {
-          setParty(party);
-          onJoined();
-        });
-      }, 1000);
+
+      apiErrorHandler(async () => {
+        try {
+          if (type === 'guest') {
+            await joinAsGuest(partyToJoin.id);
+          } else if (type === 'cohost') {
+            await joinAsCohost(partyToJoin.id);
+          }
+        } catch (e) {
+          setLoadingState(LoadingState.Loaded);
+          throw e;
+        }
+      })
     }
   }
 
@@ -83,16 +114,16 @@ export default function Join(): JSX.Element {
       <div className={styles.details}>
         <CSSTransition in={loadingState === LoadingState.Loaded} timeout={500} classNames="joinFade" mountOnEnter unmountOnExit>
           <div className={styles.detailsInner}>
-            <p>Join</p>
+            <p>{type === 'cohost' ? 'Co-host' : 'Join'}</p>
             <h2>{partyToJoin?.name}</h2>
-            <p>to start requesting songs</p>
+            <p>to start {type === 'cohost' ? 'approving and rejecting song requests' : 'requesting songs'}</p>
           </div>
         </CSSTransition>
 
         {loadingState === LoadingState.Error &&
           <div className={styles.detailsInner}>
             <h2>:(</h2>
-            <p>Something went wrong finding that party. Please try again.</p>
+            <p>Something went wrong joining that party. Please try again.</p>
           </div>
         }
 
@@ -113,7 +144,7 @@ export default function Join(): JSX.Element {
         <ActionBar>
           <div className={styles.actionBarContainer}>
             <div>
-              <Button style={ButtonStyle.WhitePrimary} icon={MusicalNoteIcon} iconAltText="Musical notes" onClick={onClickJoin}>Join party</Button>
+              <Button style={ButtonStyle.WhitePrimary} icon={MusicalNoteIcon} iconAltText="Musical notes" onClick={onClickJoin}>{type === 'cohost' ? 'Co-host party' : 'Join party'}</Button>
               <div className={styles.spacer}></div>
               <Button style={ButtonStyle.WhiteSecondary} icon={InformationIcon} iconAltText="Information">How does it work?</Button>
             </div>

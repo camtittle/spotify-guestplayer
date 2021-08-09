@@ -1,4 +1,5 @@
 import { Role } from "../api/models/role";
+import { pushNotificationSetting } from "./PushNotificationSetting";
 
 export interface Party {
   id: string;
@@ -6,4 +7,5 @@ export interface Party {
   guestCount: number;
   token: string;
   role: Role;
+  pushNotificationSetting?: pushNotificationSetting;
 }

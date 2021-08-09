@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Push;
 using Spotify;
 using Spotify.Client.Models;
 using System;
@@ -40,7 +41,7 @@ namespace guestplayer_server
             services.AddCors(
                 options =>
                 {
-                    options.AddDefaultPolicy(builder => builder.WithOrigins("http://localhost:3000", "https://guestplayer.camtittle.com").AllowAnyMethod().AllowAnyHeader().AllowCredentials());
+                    options.AddDefaultPolicy(builder => builder.WithOrigins("http://localhost:3000", "http://localhost:4000", "https://guestplayer.camtittle.com").AllowAnyMethod().AllowAnyHeader().AllowCredentials());
                 });
 
 
@@ -59,6 +60,9 @@ namespace guestplayer_server
 
             // Services
             services.AddServices(Configuration);
+
+            // Push
+            services.AddPushServices(Configuration);
 
             // Controllers
             services.AddControllers();

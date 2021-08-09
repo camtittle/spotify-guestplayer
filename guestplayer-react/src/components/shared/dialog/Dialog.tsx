@@ -12,6 +12,7 @@ interface DialogProps {
   primaryLabel: string;
   onClickPrimary: () => void;
   onClickSecondary?: () => void;
+  equallySpacedButtons?: boolean;
 }
 
 class Dialog extends Component<DialogProps> {
@@ -45,6 +46,8 @@ class Dialog extends Component<DialogProps> {
       };
     }
 
+    const secondaryButtonClassName = this.props.equallySpacedButtons ? '' : styles.secondaryButton;
+
     return (
       <Fragment>
         <Backdrop visible={this.state.visible} onClick={this.onDismiss} />
@@ -61,7 +64,7 @@ class Dialog extends Component<DialogProps> {
               <div className={styles.body}>{this.props.body}</div>
               <div className={styles.buttonsContainer}>
                 {this.props.secondaryLabel &&
-                  <Button style={ButtonStyle.WhiteSecondary} size={ButtonSize.Medium} onClick={this.props.onClickSecondary}>{this.props.secondaryLabel}</Button>
+                  <Button style={ButtonStyle.WhiteSecondary} size={ButtonSize.Medium} onClick={this.props.onClickSecondary} className={secondaryButtonClassName}>{this.props.secondaryLabel}</Button>
                 }
                 <Button style={ButtonStyle.GreenPrimary} size={ButtonSize.Medium} onClick={this.props.onClickPrimary}>{this.props.primaryLabel}</Button>
               </div>

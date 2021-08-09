@@ -19,18 +19,27 @@ import ManageGuestRequests from './components/pages/guest/manageGuestRequests/Ma
 import CreatePartyIntro from './components/pages/host/createPartyIntro/CreatePartyIntro';
 import CohostIntro from './components/pages/host/cohost/cohostIntro/CohostIntro';
 import AddCohost from './components/pages/host/cohost/addCohost/AddCohost';
+import NotificationSettings from './components/pages/host/notificationSettings/NotificationSettings';
+import TrackRequestNotifications from './components/pages/host/trackRequestNotifications/TrackRequestNotifications';
 
 export default function App() {
   return (
     <PartyContextProvider>
+      
       <Router>
         <div className={styles.App}>
+
           <ToastContextProvider>
             <Switch>
               <Route path="*">
                 <SlideLeft>
+
                   <Route path="/join/:id">
-                    <Join />
+                    <Join type="guest" />
+                  </Route>
+
+                  <Route path="/cohost/join/:id/:cohostJoinToken">
+                    <Join type="cohost" />
                   </Route>
 
                   <Route path="/scan">
@@ -49,6 +58,10 @@ export default function App() {
                     <GuestHome />
                   </Route>
 
+                  <Route path='/party/host/notifications'>
+                    <NotificationSettings />
+                  </Route>
+
                   <Route path='/party/host/requests'>
                     <ManageRequests />
                   </Route>
@@ -61,8 +74,12 @@ export default function App() {
                     <CohostIntro />
                   </Route>
                   
-                  <Route path="/party/cohost">
+                  <Route path="/party/cohost/invite">
                     <AddCohost />
+                  </Route>
+
+                  <Route path='/party/cohost'>
+                    <HostHome />
                   </Route>
                   
                   <Route path="/party/create/intro">
@@ -82,6 +99,7 @@ export default function App() {
 
             </Switch>
             </ToastContextProvider>
+            <TrackRequestNotifications />
         </div>
       </Router>
         

@@ -132,6 +132,7 @@ export class ConfirmRequestDialogType extends Component<ConfirmRequestProps, Con
           onClickPrimary={this.closeTooManyRequestsDialog}
           secondaryLabel="View requests"
           onClickSecondary={this.onClickViewRequests}
+          equallySpacedButtons
           ref={this.tooManyRequestsDialogRef}
         />
       </Fragment>

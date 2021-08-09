@@ -21,6 +21,7 @@
     <ProjectReference Include="..\Business\Business.csproj" />
     <ProjectReference Include="..\Database\Database.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\Push\Push.csproj" />
     <ProjectReference Include="..\Spotify\Spotify.csproj" />
   </ItemGroup>
 

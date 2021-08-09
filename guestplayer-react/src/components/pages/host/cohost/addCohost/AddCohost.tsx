@@ -12,6 +12,7 @@ import { useApiErrorHandler } from '../../../../../hooks/apiErrorHandlerHook';
 import { ToastContext } from '../../../../../contexts/toastContext';
 import { ToastStyle } from '../../../../shared/toast/Toast';
 import Dialog from '../../../../shared/dialog/Dialog';
+import { Role } from '../../../../../api/models/role';
 
 const AddCohost = () => {
 
@@ -19,10 +20,20 @@ const AddCohost = () => {
   const [qrCodeSrc, setQrCodeSrc] = useState<string>();
   const [joinLink, setJoinLink] = useState('');
   const shareLinkRef = useRef<HTMLInputElement>(null);
-  const { party } = useContext(PartyContext);
+  const { party, partyLoaded } = useContext(PartyContext);
   const { showToast }= useContext(ToastContext);
   const handleApiError = useApiErrorHandler();
   const generateLinkDialogRef = useRef<Dialog>(null);
+
+  useEffect(() => {
+    if (partyLoaded) {
+      if (!party) {
+        history.push('/');
+      } else if (party.role !== Role.Host) {
+        history.push('/');
+      }
+    }
+  }, [party, partyLoaded])
 
   useEffect(() => {
     if (party?.id) {
@@ -42,15 +53,11 @@ const AddCohost = () => {
     history.push('/party/host');
   }
 
-  const onClickShare = async () => {
-    generateLinkDialogRef.current?.show();
-  };
-
   const onClickBack = () => {
     history.push('/party/host');
   }
 
-  const onConfirmGenerateLink = async () => {
+  const onClickShare = async () => {
     generateLinkDialogRef.current?.hide();
     if (!party) {
       return;
@@ -85,7 +92,7 @@ const AddCohost = () => {
 
           <div className={styles.warning}>
             <h2>Warning</h2>
-            <p>This QR code gives Co-hosts the power to accept and reject song requests</p>
+            <p>Adding a Co-host gives them the power to accept and reject song requests, whereas guests can only request songs.</p>
             <Button className={styles.inviteGuestsLink} style={ButtonStyle.WhitePrimary} size={ButtonSize.Medium} onClick={navigateHome}>Invite guests instead</Button>
           </div>
         </div>
@@ -94,7 +101,7 @@ const AddCohost = () => {
           <div className={styles.qrCode}>
             <img className={qrCodeSrc ? styles.loaded : undefined} src={qrCodeSrc}></img>
           </div>
-          <p>A new QR code is generated after each Co-host joins</p>
+          <p>This QR gives Co-hosts the power to approve and reject requests</p>
         </div>
 
         <ActionBar>
@@ -106,14 +113,6 @@ const AddCohost = () => {
         <input className={styles.shareLinkInput} type="text" ref={shareLinkRef} value={joinLink} readOnly />
 
       </FlexContainer>
-        
-      <Dialog
-        title="Co-host Invite Link"
-        body="Each link can only be used to add one Co-host. After they join, you can generate a new link to invite another Co-host."
-        primaryLabel="OK"
-        onClickPrimary={onConfirmGenerateLink}
-        ref={generateLinkDialogRef}
-      />
 
     </Fragment>
   )

@@ -36,7 +36,8 @@ namespace guestplayer_server.Controllers
             {
                 Secure = true,
                 HttpOnly = true,
-                SameSite = SameSiteMode.None
+                SameSite = SameSiteMode.None,
+                Expires = new DateTimeOffset(DateTime.UtcNow.AddDays(7))
             };
 
             Response.Cookies.Append(AuthConstants.REFRESH_TOKEN_COOKIE, refreshToken, cookieOptions);

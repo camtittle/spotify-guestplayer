@@ -4,15 +4,21 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
+using System.Collections.Generic;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
 public class AuthorizeAttribute : Attribute, IAuthorizationFilter
 {
-    private readonly Role _role;
+    private readonly List<Role> _roles;
 
     public AuthorizeAttribute(Role role)
     {
-        _role = role;
+        _roles = new List<Role>(new []{ role });
+    }
+
+    public AuthorizeAttribute(params Role[] roles)
+    {
+        _roles = new List<Role>(roles);
     }
 
     public void OnAuthorization(AuthorizationFilterContext context)
@@ -23,7 +29,7 @@ public class AuthorizeAttribute : Attribute, IAuthorizationFilter
         {
             // Unauthorized
             context.Result = new JsonResult(new { message = "Unauthorized" }) { StatusCode = StatusCodes.Status401Unauthorized };
-        } else if (role != _role)
+        } else if (!_roles.Contains((Role)role))
         {
             // Forbidden
             context.Result = new JsonResult(new { message = "Forbidden" }) { StatusCode = StatusCodes.Status403Forbidden };

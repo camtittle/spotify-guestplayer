@@ -29,7 +29,7 @@ namespace guestplayer_server.Websockets.Hubs
                 var partyId = validatedToken.Claims.First(x => x.Type == JwtClaim.PartyId).Value;
                 var role = JwtRole.MapToRole(validatedToken.Claims.First(x => x.Type == JwtClaim.Role).Value);
 
-                if (role == Role.Host && partyId != null)
+                if ((role == Role.Host || role == Role.Cohost) && partyId != null)
                 {
                     var groupName = GroupsHelper.GetPartyAdminGroupName(partyId);
                     await Groups.AddToGroupAsync(Context.ConnectionId, groupName);

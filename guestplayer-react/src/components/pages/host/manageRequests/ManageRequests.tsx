@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import { PartyContext } from '../../../../contexts/partyContext';
 import styles from './ManageRequests.module.scss';
@@ -17,6 +17,7 @@ import { ToastStyle } from '../../../shared/toast/Toast';
 import { ErrorCode } from '../../../../api/error/ErrorCodes';
 import { Subscription } from '../../../../api/services/websocketService';
 import { useApiErrorHandler } from '../../../../hooks/apiErrorHandlerHook';
+import Dialog from '../../../shared/dialog/Dialog';
 
 const ManageRequests = () => {
 
@@ -27,6 +28,7 @@ const ManageRequests = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
   const history = useHistory();
+  const deviceErrorDialogRef = useRef<Dialog>(null);
 
   useEffect(() => {
     if (!party && partyLoaded) {
@@ -68,6 +70,15 @@ const ManageRequests = () => {
     history.push('/party/host');
   }
 
+  const showActiveDeviceErrorDialog = () => {
+    showToast(undefined);
+    deviceErrorDialogRef.current?.show();
+  }
+
+  const dismissDeviceErrorDialog = () => {
+    deviceErrorDialogRef.current?.hide();
+  };
+
   const onClickTrash = (requestToDelete: TrackRequest) => {
     if (!trackRequests || !party) {
       return;
@@ -82,9 +93,7 @@ const ManageRequests = () => {
       text: 'Deleting track request'
     });
     
-    handleApiError(async () => {
-      await deleteTrackRequest(requestToDelete)
-    }).then(() => {
+    deleteTrackRequest(requestToDelete).then(() => {
       showToast({
         style: ToastStyle.Success,
         text: 'Track request deleted'
@@ -120,18 +129,20 @@ const ManageRequests = () => {
       text: 'Playing track'
     });
     
-    handleApiError(async () => {
-      await acceptTrackRequest(requestToPlay, 'play');
-    }).then(() => {
+    acceptTrackRequest(requestToPlay, 'play').then(() => {
       showToast({
         style: ToastStyle.Success,
         text: 'Track played succesfully'
       });
     }).catch((e) => {
       console.error(e);
-      let errorMessage = 'Failed to play track';
       if (e.errorCode === ErrorCode.ActivePlayerDeviceNotFound) {
-        errorMessage = "Couldn't play track. To play tracks you need to have an active device currently playing music from Spotify.";
+        showActiveDeviceErrorDialog();
+      } else {
+        showToast({
+          style: ToastStyle.Error,
+          text: 'Failed to play track'
+        });
       }
 
       // Failed to delete, so add it back to the list
@@ -141,10 +152,6 @@ const ManageRequests = () => {
         }
         requests.splice(index, 0, requestToPlay);
         return requests.slice();
-      });
-      showToast({
-        style: ToastStyle.Error,
-        text: errorMessage
       });
     });
   };
@@ -163,17 +170,19 @@ const ManageRequests = () => {
       text: 'Queueing track'
     });
     
-    handleApiError(async () => {
-      await acceptTrackRequest(requestToPlay, 'queue');
-    }).then(() => {
+    acceptTrackRequest(requestToPlay, 'queue').then(() => {
       showToast({
         style: ToastStyle.Success,
         text: 'Track queued succesfully'
       });
     }).catch((e) => {
-      let errorMessage = 'Failed to queue track';
       if (e.errorCode === ErrorCode.ActivePlayerDeviceNotFound) {
-        errorMessage = "Couldn't queue track. To queue tracks you need to have an active device currently playing music from Spotify.";
+        showActiveDeviceErrorDialog();
+      } else {
+        showToast({
+          style: ToastStyle.Error,
+          text: 'Failed to queue track'
+        });
       }
 
       // Failed to delete, so add it back to the list
@@ -183,10 +192,6 @@ const ManageRequests = () => {
         }
         requests.splice(index, 0, requestToPlay);
         return requests.slice();
-      });
-      showToast({
-        style: ToastStyle.Error,
-        text: errorMessage
       });
     });
   };
@@ -233,6 +238,12 @@ const ManageRequests = () => {
         </div>
       }
 
+      { requestCards && requestCards.length < 1 &&
+        <div className={styles.errorContainer}>
+          <div>No requests</div>
+        </div>
+      }
+
       { requestCards &&
         <div className={styles.cardsContainer}>
           <TransitionGroup>
@@ -240,6 +251,14 @@ const ManageRequests = () => {
           </TransitionGroup>
         </div>
       }
+            
+      <Dialog
+        title="No device found"
+        body="We couldn't find a device currently playing music on your Spotify account. Start playing music on your device and try again."
+        primaryLabel="OK"
+        onClickPrimary={dismissDeviceErrorDialog}
+        ref={deviceErrorDialogRef}
+      />
 
     </FlexContainer>
   );

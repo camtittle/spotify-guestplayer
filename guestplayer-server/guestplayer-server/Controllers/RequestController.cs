@@ -76,7 +76,7 @@ namespace guestplayer_server.Controllers
         [HttpGet("")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize(Role.Host)]
+        [Authorize(Role.Host, Role.Cohost)]
         public async Task<ActionResult> GetRequests()
         {
             if (!ModelState.IsValid)
@@ -135,7 +135,7 @@ namespace guestplayer_server.Controllers
         [HttpGet("count")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize(Role.Host)]
+        [Authorize(Role.Host, Role.Cohost)]
         public async Task<ActionResult<GetRequestCountResponse>> GetRequestCount()
         {
             if (!ModelState.IsValid)
@@ -158,7 +158,7 @@ namespace guestplayer_server.Controllers
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize(Role.Host)]
+        [Authorize(Role.Host, Role.Cohost)]
         public async Task<ActionResult> DeleteRequest(string id)
         {
             if (!ModelState.IsValid)
@@ -176,7 +176,7 @@ namespace guestplayer_server.Controllers
         [HttpPost("{id}/play")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize(Role.Host)]
+        [Authorize(Role.Host, Role.Cohost)]
         public async Task<ActionResult> PlayRequest(string id)
         {
             if (!ModelState.IsValid)
@@ -201,7 +201,7 @@ namespace guestplayer_server.Controllers
         [HttpPost("{id}/queue")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize(Role.Host)]
+        [Authorize(Role.Host, Role.Cohost)]
         public async Task<ActionResult> QueueRequest(string id)
         {
             if (!ModelState.IsValid)

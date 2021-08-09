@@ -19,11 +19,25 @@ export namespace WebsocketService {
 
   const subs: { [methodName: string]: Subscription[] } = {};
   
+  let initConnectionBusyFlag = false;
   const initConnection = async (): Promise<void> => {
+    if (initConnectionBusyFlag) {
+      return new Promise(resolve => {
+
+        const interval = setInterval(() => {
+          if (!initConnectionBusyFlag) {
+            clearInterval(interval);
+            resolve();
+          }
+        }, 100)
+      })
+    }
+
     if (connection) {
       return;
     }
 
+    initConnectionBusyFlag = true;
     const token = await TokenManager.getBearerToken();
   
     connection = new signalR.HubConnectionBuilder()
@@ -31,13 +45,15 @@ export namespace WebsocketService {
       .withAutomaticReconnect()
       .build();
     
-    connection.start()
-      .then(() => connection.invoke(authorizeMethod, token));
     
     connection.on("Disconnect", async () => {
       console.log('received disconnect');
       await connection.stop();
-    })
+    });
+    
+    connection.start()
+      .then(() => connection.invoke(authorizeMethod, token))
+      .finally(() => initConnectionBusyFlag = false);
   }
 
   const addSubscription = <TData>(method: string, callback: Listener<TData>): Subscription => {

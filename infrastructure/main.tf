@@ -7,6 +7,13 @@ terraform {
     }
   }
 
+  backend "azurerm" {
+    resource_group_name  = "guestplayerTerraformStateRG"
+    storage_account_name = "guestplayertfstate"
+    container_name       = "tfstate"
+    key                  = "prod.terraform.tfstate"
+  }
+
   required_version = ">= 0.14.9"
 }
 
@@ -20,11 +27,21 @@ variable "admin_password" {
     description = "Password must meet Azure complexity requirements"
 }
 
+variable "deploy_from_ip" {
+    type = string
+    description = "IP from which to allow inbound RDP and WebDeploy traffic to the VM"
+}
+
+variable "deploy_from_ipv6" {
+    type = string
+    description = "IPv6 from which to allow inbound RDP and WebDeploy traffic to the VM"
+}
+
 locals {
   cdb_account_name = "cameront-guestplayer"
   database_name = "guestplayer"
   container_name = "party"
-  vm_image_id = "/subscriptions/b3ad533a-7660-4693-aecf-08c4492e2565/resourceGroups/guestplayerResourceGroup/providers/Microsoft.Compute/images/iis-webdeploy-2"
+  vm_image_id = "/subscriptions/b3ad533a-7660-4693-aecf-08c4492e2565/resourceGroups/iisSetup_group/providers/Microsoft.Compute/images/iis3"
 }
 
 provider "azurerm" {
@@ -74,7 +91,7 @@ resource "azurerm_network_security_group" "nsg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "3389"
-    source_address_prefix      = "*"
+    source_address_prefix      = "${var.deploy_from_ip}/32"
     destination_address_prefix = "*"
   }
 
@@ -110,7 +127,19 @@ resource "azurerm_network_security_group" "nsg" {
     protocol                   = "*"
     source_port_range          = "*"
     destination_port_range     = "8172"
-    source_address_prefix      = "*"
+    source_address_prefix      = "${var.deploy_from_ip}/32"
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "WebDeployIpv6"
+    priority                   = 1010
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "*"
+    source_port_range          = "*"
+    destination_port_range     = "8172"
+    source_address_prefix      = "${var.deploy_from_ipv6}"
     destination_address_prefix = "*"
   }
 }
@@ -139,9 +168,16 @@ resource "azurerm_windows_virtual_machine" "vm" {
     azurerm_network_interface.nic.id,
   ]
 
+  lifecycle {
+    ignore_changes = [
+      admin_password
+    ]
+  }
+
   os_disk {
     caching              = "ReadWrite"
     storage_account_type = "StandardSSD_LRS"
+    disk_size_gb = 64
   }
 
   source_image_id = local.vm_image_id
@@ -216,7 +252,7 @@ resource "azurerm_key_vault" "kv" {
     object_id = data.azurerm_client_config.current.object_id
 
     secret_permissions = [
-      "Get", "Delete", "List", "Set",
+      "Get", "Delete", "List", "Set", "Purge", "Recover", "Restore"
     ]
   }
 

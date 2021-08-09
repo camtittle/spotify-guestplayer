@@ -8,18 +8,18 @@ const helpSteps: HelpStepConfig[] = [
   },
   {
     header: 'Share control',
-    body: "Co-hosts can accept and reject requests, but they can't end the party or invite other Co-hosts"
+    body: "Co-hosts can accept and reject requests, but they can't end the party."
   },
   {
     header: 'Be careful',
     body: "Once Co-hosts have joined the party they can't be removed. Be careful where you share the QR code or link."
   },
-]
+];
 
 const CohostIntro = () => {
   return (
     <Intro
-      getStartedPath="/party/cohost"
+      getStartedPath="/party/cohost/invite"
       steps={helpSteps}
       title="Add a Co-host"
     />

@@ -1,6 +1,6 @@
 @import '_colours';
 
-.errorContainer, .loadingContainer {
+.loadingContainer {
     display: flex;
     height: 100%;
     width: 100%;
@@ -9,6 +9,15 @@
 
     div {
         text-align: center;
+    }
+}
+
+.errorContainer {
+    div {
+        text-align: center;
+        font-weight: 500;
+        color: $grey-30;
+        margin-top: 40px;
     }
 }
 

@@ -1,0 +1,30 @@
+@import '_colours';
+
+.container {
+    text-align: left;
+    width: 100%;
+    padding: 16px 8px;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 500;
+}
+
+.description {
+    font-size: 14px;
+    margin-top: 6px;
+    font-weight: 300;
+    color: $grey-30;
+}
+
+.setting {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 32px;
+
+    .button {
+        max-width: 90px;
+    }
+}

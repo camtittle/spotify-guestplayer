@@ -60,19 +60,19 @@ export default function GuestHome() {
 
   const menuItems: MenuItem[] = [
     {
-      label: 'Leave party',
-      icon: LogoutIcon,
-      onClick: () => {
-        leavePartyDialogRef.current?.show();
-      }
-    },
-    {
       label: 'My requests',
       icon: MusicalNotesWhite,
       onClick: () => {
         history.push('/party/guest/requests')
       }
     },
+    {
+      label: 'Leave party',
+      icon: LogoutIcon,
+      onClick: () => {
+        leavePartyDialogRef.current?.show();
+      }
+    }
   ];
 
   const onConfirmLeaveParty = async () => {
