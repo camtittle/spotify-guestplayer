@@ -11,6 +11,8 @@
 import { clientsClaim } from 'workbox-core';
 import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
+import { TrackRequestResponse } from './api/models/TrackRequestResponse';
+import { MessageType } from './models/MessageType';
 import { NavigateMessage } from './models/NavigateMessage';
 import { PostMessage } from './models/PostMesage';
 import { NotificationType, PushNotification } from './models/PushNotification';
@@ -63,17 +65,69 @@ self.addEventListener('message', (event) => {
   }
 });
 
+const isClientFocused = async () => {
+  const windowClients = await self.clients.matchAll({
+    type: 'window',
+    includeUncontrolled: true
+  });
 
+  for (let i = 0; i < windowClients.length; i++) {
+    const windowClient = windowClients[i];
+    if (windowClient.focused) {
+      return true;
+    }
+  }
 
-const isTrackRequestNotification = (notification: PushNotification<any>): notification is PushNotification<TrackRequest> => {
+  return false;
+}
+
+const clearNotifications = async () => {
+  return self.registration.getNotifications().then(notifications => {
+    notifications.forEach(notification => {
+      notification.close();
+    })
+  });
+}
+
+const isTrackRequestNotification = (notification: PushNotification<any>): notification is PushNotification<TrackRequestResponse> => {
   return notification.type === NotificationType.TrackRequest;
 }
 
-const handleTrackRequestNotification = (notification: PushNotification<TrackRequest>) => {
-  console.log('Showing notification');
-  self.registration.showNotification("New track request", {
-    body: `Tap to view`,
-    icon: "/assets/notification-icon.png"
+const handleTrackRequestNotification = (notification: PushNotification<TrackRequestResponse>) => {
+  return self.registration.getNotifications().then(notifications => {
+
+    let notificationTitle = 'New track request';
+    let options = {
+      body: `Tap to view`,
+      icon: notification?.data?.artworkUrl,
+      data: {} as any
+    }
+
+    if (notifications && notifications.length > 0) {
+      console.log(notifications);
+      // We have an open notification, so merge new notification with this one
+      const existingNotification = notifications[0];
+      const count = existingNotification.data?.newRequestCount || 1;
+
+      options.body = `Tap to view`;
+      options.data = {
+        newRequestCount: count + 1
+      };
+      notificationTitle = `${options.data.newRequestCount} new track requests`;
+
+      notifications.forEach(x => x.close()); // Close existing notifications
+    } else {
+      options.body = 'Tap to view';
+      options.data = {
+        newRequestCount: 1
+      };
+      notificationTitle = 'New track request';
+    }
+
+    return self.registration.showNotification(
+      notificationTitle,
+      options
+    );
   });
 }
 
@@ -83,16 +137,23 @@ const handlePushNotification = (notification: PushNotification<any>) => {
   }
 };
 
+
 // Push notifs
 self.addEventListener('push', (e: PushEvent) => {
-  console.log('received push');
   const data = e.data?.json() as PushNotification<any>;
-  console.log(data);
-  handlePushNotification(data);
+
+  isClientFocused().then(clientIsFocused => {
+    if (clientIsFocused) {
+      console.log('Ignoring push - client in focus');
+      return;
+    }
+  
+    handlePushNotification(data);
+  })
 });
 
-self.addEventListener('notificationclick', function(event) {
-  event.waitUntil(async function() {
+self.addEventListener('notificationclick', function (event) {
+  event.waitUntil(async function () {
     const allClients = await self.clients.matchAll({
       includeUncontrolled: true
     });
@@ -113,10 +174,16 @@ self.addEventListener('notificationclick', function(event) {
       break;
     }
 
-    // If we didn't find an existing chat window,
-    // open a new one:
+    // Open a new window if no existing one is found
     if (!activeClient) {
       activeClient = await self.clients.openWindow('/party/host/requests');
     }
   }());
 }, false);
+
+addEventListener('message', event => {
+  console.log(`The client sent SW a message: ${event.data}`);
+  if (event.data === MessageType.ClearNotifications) {
+    clearNotifications();
+  }
+});

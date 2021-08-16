@@ -1,6 +1,10 @@
 // This optional code is used to register a service worker.
 // register() is not called by default.
 
+import { MessageType } from "./models/MessageType";
+import { NavigateMessage } from "./models/NavigateMessage";
+import { PostMessage } from "./models/PostMesage";
+
 // This lets the app load faster on subsequent visits in production, and gives
 // it offline capabilities. However, it also means that developers (and users)
 // will only see deployed updates on subsequent visits to a page, after all the
@@ -46,6 +50,7 @@ export function register(config?: Config) {
         // Add some additional logging to localhost, pointing developers to the
         // service worker/PWA documentation.
         navigator.serviceWorker.ready.then(() => {
+          addEventListeners();
           console.log(
             'This web app is being served cache-first by a service ' +
               'worker. To learn more, visit https://cra.link/PWA'
@@ -64,6 +69,7 @@ function registerValidSW(swUrl: string, config?: Config) {
   navigator.serviceWorker
     .register(swUrl)
     .then((registration) => {
+      addEventListeners();
       registration.onupdatefound = () => {
         const installingWorker = registration.installing;
         if (installingWorker == null) {
@@ -131,6 +137,26 @@ function checkValidServiceWorker(swUrl: string, config?: Config) {
     .catch(() => {
       console.log('No internet connection found. App is running in offline mode.');
     });
+}
+
+const addEventListeners = () => {
+
+  navigator.serviceWorker.addEventListener('message', event => {
+    const data = event.data as PostMessage<any>;
+    if (event.data.type === 'navigate') {
+      const path = (data.message as NavigateMessage).path;
+      window.location.href = path;
+    }
+  });
+  
+  window.addEventListener('focus', () => {
+    if (navigator.serviceWorker) {
+      navigator.serviceWorker.ready.then(registration => {
+        registration?.active?.postMessage(MessageType.ClearNotifications);
+      });
+    
+    }
+  })
 }
 
 export function unregister() {

@@ -38,7 +38,7 @@ namespace Business.Services
             };
             var subscriptions = usersToNotify.Select(x => x.PushSubscription).Where(x => x != null);
 
-            var tasks = subscriptions.Select(subscription =>
+            var tasks = subscriptions.Select(async (subscription) =>
             {
                 var sendParams = new SendPushParams<TrackRequest>()
                 {
@@ -49,12 +49,11 @@ namespace Business.Services
 
                 try
                 {
-                    return _pushNotificationService.Send(sendParams);
+                    await _pushNotificationService.Send(sendParams);
                 } catch (Exception e)
                 {
                     // Silently swallow error as we dont want failing push notifs to make the HTTP request error
                     Console.WriteLine(e.ToString());
-                    return Task.CompletedTask;
                 }
             });
 
