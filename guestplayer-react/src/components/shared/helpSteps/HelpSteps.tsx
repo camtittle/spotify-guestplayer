@@ -14,7 +14,7 @@ export interface HelpStepsProps {
 const HelpSteps = ({ title, steps }: HelpStepsProps) => {
   
   const stepElements = steps.map((step, index) => (
-    <CSSTransition in appear timeout={1000 + ((index + 1) * 300)} mountOnEnter classNames={{
+    <CSSTransition in appear timeout={1000 + ((index + 1) * 300)} key={index} mountOnEnter classNames={{
       appear: styles.enter,
       appearActive: styles.enterActive
     }}>
