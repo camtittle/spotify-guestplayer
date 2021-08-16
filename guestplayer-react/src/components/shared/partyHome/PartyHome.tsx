@@ -9,6 +9,7 @@ import { MenuItem } from "../titleBar/menu/Menu";
 import { TitleBar } from "../titleBar/TitleBar";
 import { ToastStyle } from "../toast/Toast";
 import styles from './PartyHome.module.scss';
+import LoadingSpinner from '../../shared/loadingSpinner/LoadingSpinner';
 
 export interface PartyHomeProps {
   header: JSX.Element;
@@ -36,10 +37,13 @@ export default function PartyHome(props: PartyHomeProps) {
 
   useEffect(() => {
     if (party?.id) {
-      generateQrCode(party.id)
+      // Delay QR code gen so it doesn't interfere with page transition
+      setTimeout(() => {
+        generateQrCode(party.id)
         .then(uri => {
           setQrCodeSrc(uri);
         });
+      }, 300);
     }
   }, [party?.id]);
 
@@ -63,7 +67,6 @@ export default function PartyHome(props: PartyHomeProps) {
         url: partyJoinUrl
       });
     } else {
-      console.log('share');
       if (partyIdRef.current) {
         partyIdRef.current.select();
         document.execCommand("copy");
@@ -85,6 +88,9 @@ export default function PartyHome(props: PartyHomeProps) {
 
       <div className={styles.qrContainer}>
         <div className={styles.qrCode}>
+          { !qrCodeSrc &&
+            <LoadingSpinner />
+          }
           <img className={qrCodeSrc ? styles.loaded : undefined} src={qrCodeSrc}></img>
         </div>
         <p>{props.qrLabel}</p>

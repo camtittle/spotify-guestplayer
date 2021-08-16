@@ -32,11 +32,17 @@
     width: 11rem;
     height: 11rem;
     background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     img {
+        position: absolute;
+        top: 0;
+        left: 0;
         width: 100%;
         opacity: 0;
-        transition: opacity 2s;
+        transition: opacity 0.3s;
     }
 }
 
