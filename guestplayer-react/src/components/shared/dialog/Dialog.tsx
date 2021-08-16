@@ -12,6 +12,7 @@ interface DialogProps {
   primaryLabel: string;
   onClickPrimary: () => void;
   onClickSecondary?: () => void;
+  loading?: boolean;
   equallySpacedButtons?: boolean;
 }
 
@@ -66,7 +67,7 @@ class Dialog extends Component<DialogProps> {
                 {this.props.secondaryLabel &&
                   <Button style={ButtonStyle.WhiteSecondary} size={ButtonSize.Medium} onClick={this.props.onClickSecondary} className={secondaryButtonClassName}>{this.props.secondaryLabel}</Button>
                 }
-                <Button style={ButtonStyle.GreenPrimary} size={ButtonSize.Medium} onClick={this.props.onClickPrimary}>{this.props.primaryLabel}</Button>
+                <Button style={ButtonStyle.GreenPrimary} loading={this.props.loading} size={ButtonSize.Medium} onClick={this.props.onClickPrimary}>{this.props.primaryLabel}</Button>
               </div>
             </div>
           </FlexContainer>

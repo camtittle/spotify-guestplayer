@@ -33,6 +33,7 @@ export default function HostHome() {
   const leavePartyDialogRef = useRef<Dialog>(null);
   const pushNotificationsDialogRef = useRef<Dialog>(null);
   const handleApiError = useApiErrorHandler();
+  const [pushNotificationLoading, setPushNotificationLoading] = useState(false);
   const [supportsPushNotifs, setSupportsPushNotifs] = useState(false);
 
   useEffect(() => {
@@ -172,6 +173,8 @@ export default function HostHome() {
   const onConfirmEnablePushNotifications = async () => {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
 
+    setPushNotificationLoading(true);
+
     const registration = await navigator.serviceWorker.ready;
     // Subscribe to push notifications
     const publicVapidKey = process.env.REACT_APP_PUSH_PUBLIC_KEY as string;
@@ -195,6 +198,8 @@ export default function HostHome() {
           });
         }
       });
+      
+      setPushNotificationLoading(false);
       pushNotificationsDialogRef.current?.hide();
     }
   };
@@ -241,6 +246,7 @@ export default function HostHome() {
         onClickPrimary={onConfirmEnablePushNotifications}
         secondaryLabel="Cancel"
         onClickSecondary={onRejectPushNotifications}
+        loading={pushNotificationLoading}
         ref={pushNotificationsDialogRef}
       />
     </Fragment>

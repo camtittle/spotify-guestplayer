@@ -32,11 +32,13 @@ export const Button: React.FC<ButtonProps> = (props) => {
 
   const loading = props.loading === true;
   const classNames = [styles.button, props.className];
+  let loadingColor = '#1DB954'; // green
 
   if (props.style === ButtonStyle.WhiteSecondary) {
     classNames.push(styles.secondary);
   } else if (props.style === ButtonStyle.GreenPrimary) {
     classNames.push(styles.greenPrimary);
+    loadingColor = 'white';
   }
 
   if (props.disabled && !props.loading) {
@@ -77,7 +79,7 @@ export const Button: React.FC<ButtonProps> = (props) => {
         unmountOnExit
       >
         <div className={styles.buttonContainer}>
-          <LoadingSpinner className={styles.loadingSpinner} />
+          <LoadingSpinner className={styles.loadingSpinner} color={loadingColor} />
         </div>
       </CSSTransition>
 
