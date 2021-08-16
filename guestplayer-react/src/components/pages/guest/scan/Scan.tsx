@@ -10,13 +10,29 @@ export default function Scan(): JSX.Element {
 
   const history = useHistory();
 
+  const handleCohostScan = (data: string) => {
+    const parts = data.split('/cohost/join');
+    if (parts.length === 2) {
+      const [partyId, joinToken] = parts[1].split('/');
+      history.push(`cohost/join/${partyId}/${joinToken}`);
+    }
+  }
+  
+  const handleJoinScan = (data: string) => {
+    const parts = data.split('/join/');
+    if (parts.length === 2) {
+      const partyId = parts[1];
+      history.push(`/join/${partyId}`);
+    }
+  }
+
   const handleScan = (data: any) => {
     if (data) {
       console.log(data);
-      const parts = data.split('/join/');
-      if (parts.length === 2) {
-        const partyId = parts[1];
-        history.push(`/join/${partyId}`);
+      if (data.includes('cohost')) {
+        handleCohostScan(data);
+      } else {
+        handleJoinScan(data);
       }
     }
   }
