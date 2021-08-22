@@ -49,7 +49,7 @@ export default function Scan(): JSX.Element {
     <FlexContainer>
       <BackButton className={styles.back} onClick={onClickBack}></BackButton>
 
-      <h1 className={styles.header}>GuestPlayer</h1>
+      <h1 className={styles.header}>GuestRequest</h1>
 
       <div className={styles.camera}>
         <QrReader

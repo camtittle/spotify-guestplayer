@@ -30,7 +30,7 @@ export const TitleBar = (props: TitleBarProps) => {
       {props.showMenuButton &&
         <ImageButton onClick={() => showMenu(true)} icon={MenuIcon} className={styles.menuButton}></ImageButton>
       }
-      <div className={styles.title}>GuestPlayer</div>
+      <div className={styles.title}>GuestRequest</div>
 
       <Menu visible={menuVisible} onClose={() => showMenu(false)} menuItems={props.menuItems}></Menu>
     </div>

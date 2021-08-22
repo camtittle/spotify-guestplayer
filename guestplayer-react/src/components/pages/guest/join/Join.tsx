@@ -109,7 +109,7 @@ export default function Join({ type }: JoinProps): JSX.Element {
 
       <BackButton className={styles.back} onClick={onClickBack}></BackButton>
 
-      <h1 className={styles.header}>GuestPlayer</h1>
+      <h1 className={styles.header}>GuestRequest</h1>
 
       <div className={styles.details}>
         <CSSTransition in={loadingState === LoadingState.Loaded} timeout={500} classNames="joinFade" mountOnEnter unmountOnExit>

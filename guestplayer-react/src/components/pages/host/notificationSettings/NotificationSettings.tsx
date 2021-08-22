@@ -86,7 +86,7 @@ export default function NotificationSettings() {
 
       <div className={styles.container}>
         <h1 className={styles.title}>Notification settings</h1>
-        <p className={styles.description}>GuestPlayer can send you notifications when you receive a new track request so you never miss a request.</p>
+        <p className={styles.description}>GuestRequest can send you notifications when you receive a new track request so you never miss a request.</p>
 
         <div className={styles.setting}>
           <p>Push notifications are <b>{currentSettingLabel}</b></p>

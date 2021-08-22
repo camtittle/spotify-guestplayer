@@ -1,6 +1,6 @@
 {
-  "short_name": "GuestPlayer",
-  "name": "GuestPlayer",
+  "short_name": "GuestRequest",
+  "name": "GuestRequest",
   "icons": [
     {
       "src": "favicon.ico",

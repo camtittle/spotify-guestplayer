@@ -41,7 +41,7 @@ namespace guestplayer_server
             services.AddCors(
                 options =>
                 {
-                    options.AddDefaultPolicy(builder => builder.WithOrigins("http://localhost:3000", "http://localhost:4000", "https://guestplayer.camtittle.com").AllowAnyMethod().AllowAnyHeader().AllowCredentials());
+                    options.AddDefaultPolicy(builder => builder.WithOrigins("http://localhost:3000", "http://localhost:4000", "https://guestrequest.app").AllowAnyMethod().AllowAnyHeader().AllowCredentials());
                 });
 
 

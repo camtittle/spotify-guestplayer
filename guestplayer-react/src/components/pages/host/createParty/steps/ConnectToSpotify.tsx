@@ -64,7 +64,7 @@ export const ConnectToSpotify = (props: ConnectToSpotifyProps) => {
   return (
     <div>
       <h1 className={styles.stepTitle}>Host a party</h1>
-      <p className={styles.stepDescription}>Log in with Spotify so GuestPlayer can play tracks and add them to the queue</p>
+      <p className={styles.stepDescription}>Log in with Spotify so GuestRequest can play tracks and add them to the queue</p>
 
       { !spotifyCredentials &&
         <Button style={ButtonStyle.GreenPrimary} className={styles.connectButton} icon={spotifyLogo} iconAltText="Spotify Logo" onClick={onClickConnectToSpotify}>Connect to Spotify</Button>

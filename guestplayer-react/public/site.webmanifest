@@ -1,6 +1,6 @@
 {
-    "name": "GuestPlayer",
-    "short_name": "GuestPlayer",
+    "name": "GuestRequest",
+    "short_name": "GuestRequest",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",

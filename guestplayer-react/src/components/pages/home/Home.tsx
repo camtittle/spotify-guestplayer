@@ -48,7 +48,7 @@ export default function Home() {
 
   return (
     <FlexContainer className={styles.container}>
-      <h1 className={styles.header}>GuestPlayer</h1>
+      <h1 className={styles.header}>GuestRequest</h1>
 
       <HelpSteps
         title="How it works"
