@@ -66,7 +66,7 @@ const AddCohost = () => {
     if (navigator.share !== undefined) {
       // Web Share API is supported
       await navigator.share({
-        title: 'Join ' + party.name + ' on GuestPlayer',
+        title: 'Join ' + party.name + ' on GuestRequest',
         url: joinLink
       });
     } else {

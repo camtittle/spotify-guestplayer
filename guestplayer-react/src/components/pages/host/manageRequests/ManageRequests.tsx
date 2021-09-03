@@ -18,6 +18,7 @@ import { ErrorCode } from '../../../../api/error/ErrorCodes';
 import { Subscription } from '../../../../api/services/websocketService';
 import { useApiErrorHandler } from '../../../../hooks/apiErrorHandlerHook';
 import Dialog from '../../../shared/dialog/Dialog';
+import { Page } from '../../../shared/page/Page';
 
 const ManageRequests = () => {
 
@@ -223,8 +224,7 @@ const ManageRequests = () => {
   }
 
   return (
-    <FlexContainer>
-      <TitleBar showBackButton onClickBack={onClickBack} />
+    <Page onClickBack={onClickBack}>
 
       { loading &&
         <div className={styles.loadingContainer}>
@@ -260,7 +260,7 @@ const ManageRequests = () => {
         ref={deviceErrorDialogRef}
       />
 
-    </FlexContainer>
+    </Page>
   );
 
 }

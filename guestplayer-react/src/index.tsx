@@ -4,8 +4,6 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
-import { PostMessage } from './models/PostMesage';
-import { NavigateMessage } from './models/NavigateMessage';
 
 ReactDOM.render(
   <React.StrictMode>

@@ -23,6 +23,7 @@ import NotificationSettings from './components/pages/host/notificationSettings/N
 import TrackRequestNotifications from './components/pages/host/trackRequestNotifications/TrackRequestNotifications';
 
 export default function App() {
+
   return (
     <PartyContextProvider>
       

@@ -10,6 +10,7 @@ import { TitleBar } from "../titleBar/TitleBar";
 import { ToastStyle } from "../toast/Toast";
 import styles from './PartyHome.module.scss';
 import LoadingSpinner from '../../shared/loadingSpinner/LoadingSpinner';
+import { Page } from "../page/Page";
 
 export interface PartyHomeProps {
   header: JSX.Element;
@@ -79,9 +80,7 @@ export default function PartyHome(props: PartyHomeProps) {
   }
 
   return (
-    <FlexContainer>
-      <TitleBar showMenuButton={true} menuItems={props.menuItems}></TitleBar>
-
+    <Page isHome menuItems={props.menuItems} >
       <div className={styles.headerContainer}>
         {props.header}
       </div>
@@ -106,6 +105,6 @@ export default function PartyHome(props: PartyHomeProps) {
       </ActionBar>
 
       <input className={styles.partyIdInput} type="text" ref={partyIdRef} value={partyJoinUrl} readOnly />
-    </FlexContainer>
+    </Page>
   )
 }

@@ -12,6 +12,7 @@ import { useHistory } from 'react-router';
 import ConfirmRequestDialog, { ConfirmRequestDialogType } from './confirmRequestDialog/ConfirmRequestDialog';
 import Search from '../../../../assets/img/search.svg';
 import { useApiErrorHandler } from '../../../../hooks/apiErrorHandlerHook';
+import { Page } from '../../../shared/page/Page';
 
 const Request = () => {
 
@@ -76,16 +77,14 @@ const Request = () => {
   };
 
   return (
-    <FlexContainer className={styles.flexContainer}>
-      <TitleBar showBackButton />
-
+    <Page containerClassName={styles.flexContainer}>
       <div className={styles.container}>
         <TextInput value={searchValue} onChange={onChangeSearchValue} className={styles.textInput} ref={textInputRef} icon={Search} />
         <TrackList tracks={tracks} onClickTrack={onClickTrack} className={styles.trackList} />
       </div>
 
       <ConfirmRequestDialog ref={confirmRequestDialogRef} party={party} />
-    </FlexContainer>
+    </Page>
   );
 };
 

@@ -146,7 +146,7 @@ export default function Join({ type }: JoinProps): JSX.Element {
             <div>
               <Button style={ButtonStyle.WhitePrimary} icon={MusicalNoteIcon} iconAltText="Musical notes" onClick={onClickJoin}>{type === 'cohost' ? 'Co-host party' : 'Join party'}</Button>
               <div className={styles.spacer}></div>
-              <Button style={ButtonStyle.WhiteSecondary} icon={InformationIcon} iconAltText="Information">How does it work?</Button>
+              {/* <Button style={ButtonStyle.WhiteSecondary} icon={InformationIcon} iconAltText="Information">How does it work?</Button> */}
             </div>
           </div>
         </ActionBar>
