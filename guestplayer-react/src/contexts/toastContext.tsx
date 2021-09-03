@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useRef, useState } from "react";
+import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router";
 import Toast, { ToastNotification, ToastStyle } from "../components/shared/toast/Toast";
 
@@ -14,25 +14,13 @@ interface ToastContextProviderProps {
   children: React.ReactNode;
 }
 
+export const useToasts = () => {
+  const toastContext = useContext(ToastContext);
+
+  return toastContext.showToast;
+}
+
 export const ToastContextProvider = ({ children }: ToastContextProviderProps) => {
-
-  const history = useHistory();
-
-  useEffect(() => {
-    const unregister = history.listen((location) => {
-      (window as any).ga('set', 'page', );
-      // (window as any).ga('send', 'pageview');
-      gtag('event', 'page_view', {
-        page_path: location.pathname + location.search,
-      })
-      
-    });
-
-    return () => {
-      unregister();
-    }
-  }, [history])
-  
   const toastRef = useRef<Toast>(null);
 
   const toastContext = useRef<ToastContextType>({

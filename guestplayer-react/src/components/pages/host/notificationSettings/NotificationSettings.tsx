@@ -5,7 +5,7 @@ import { Role } from "../../../../api/models/role";
 import { useApiErrorHandler } from "../../../../hooks/apiErrorHandlerHook";
 import { pushNotificationSetting } from "../../../../models/PushNotificationSetting";
 import { registerForPush, unregisterPush, requestPushSubscription } from "../../../../api/services/pushNotificationService";
-import { ToastContext } from "../../../../contexts/toastContext";
+import { useToasts } from "../../../../contexts/toastContext";
 import { ToastStyle } from "../../../shared/toast/Toast";
 import FlexContainer from "../../../shared/container/FlexContainer";
 import { TitleBar } from "../../../shared/titleBar/TitleBar";
@@ -15,7 +15,7 @@ import { Button, ButtonSize, ButtonStyle } from "../../../shared/button/Button";
 export default function NotificationSettings() {
 
   const { party, partyLoaded, setParty } = useContext(PartyContext);
-  const { showToast } = useContext(ToastContext);
+  const showToast = useToasts();
   const history = useHistory();
   const handleApiError = useApiErrorHandler();
 

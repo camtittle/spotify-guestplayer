@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { generateJoinUrl, generateQrCode } from "../../../api/services/partyService";
 import { PartyContext } from "../../../contexts/partyContext";
-import { ToastContext } from "../../../contexts/toastContext";
+import { ToastContext, useToasts } from "../../../contexts/toastContext";
 import { ActionBar } from "../actionBar/ActionBar";
 import { Button, ButtonStyle } from "../button/Button";
 import FlexContainer from "../container/FlexContainer";
@@ -33,7 +33,7 @@ export default function PartyHome(props: PartyHomeProps) {
   const [qrCodeSrc, setQrCodeSrc] = useState<string>();
   const [partyJoinUrl, setPartyJoinUrl] = useState<string>('');
   const { party } = useContext(PartyContext);
-  const { showToast }= useContext(ToastContext);
+  const showToast = useToasts();
   const partyIdRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {

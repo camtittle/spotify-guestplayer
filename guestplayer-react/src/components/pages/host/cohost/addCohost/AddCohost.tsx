@@ -9,7 +9,7 @@ import { Fragment, useContext, useEffect, useRef, useState } from 'react';
 import { generateCohostJoinUrl, generateCohostQrCode, generateQrCode, getCohostJoinToken } from '../../../../../api/services/partyService';
 import { PartyContext } from '../../../../../contexts/partyContext';
 import { useApiErrorHandler } from '../../../../../hooks/apiErrorHandlerHook';
-import { ToastContext } from '../../../../../contexts/toastContext';
+import { ToastContext, useToasts } from '../../../../../contexts/toastContext';
 import { ToastStyle } from '../../../../shared/toast/Toast';
 import Dialog from '../../../../shared/dialog/Dialog';
 import { Role } from '../../../../../api/models/role';
@@ -21,7 +21,7 @@ const AddCohost = () => {
   const [joinLink, setJoinLink] = useState('');
   const shareLinkRef = useRef<HTMLInputElement>(null);
   const { party, partyLoaded } = useContext(PartyContext);
-  const { showToast }= useContext(ToastContext);
+  const showToast = useToasts();
   const handleApiError = useApiErrorHandler();
   const generateLinkDialogRef = useRef<Dialog>(null);
 

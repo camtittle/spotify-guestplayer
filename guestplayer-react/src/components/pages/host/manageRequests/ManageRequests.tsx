@@ -12,7 +12,7 @@ import { Button, ButtonSize, ButtonStyle } from '../../../shared/button/Button';
 import MusicalNotesIcon from '../../../../assets/img/musical-note-small.svg';
 import QueueIcon from '../../../../assets/img/queue.svg';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
-import { ToastContext } from '../../../../contexts/toastContext';
+import { ToastContext, useToasts } from '../../../../contexts/toastContext';
 import { ToastStyle } from '../../../shared/toast/Toast';
 import { ErrorCode } from '../../../../api/error/ErrorCodes';
 import { Subscription } from '../../../../api/services/websocketService';
@@ -24,7 +24,7 @@ const ManageRequests = () => {
 
   const { party, partyLoaded } = useContext(PartyContext);
   const handleApiError = useApiErrorHandler();
-  const { showToast }= useContext(ToastContext);
+  const showToast = useToasts();
   const [trackRequests, setTrackRequests] = useState<TrackRequest[]>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();

@@ -18,13 +18,13 @@ import { useApiErrorHandler } from "../../../../hooks/apiErrorHandlerHook";
 import { pushNotificationSetting } from "../../../../models/PushNotificationSetting";
 import { urlBase64ToUint8Array } from "../../../../util/base64Utils";
 import { browserSupportsNotifications, registerForPush } from "../../../../api/services/pushNotificationService";
-import { ToastContext } from "../../../../contexts/toastContext";
+import { useToasts } from "../../../../contexts/toastContext";
 import { ToastStyle } from "../../../shared/toast/Toast";
 
 export default function HostHome() {
 
   const { party, partyLoaded, setParty } = useContext(PartyContext);
-  const { showToast } = useContext(ToastContext);
+  const showToast = useToasts();
   const [role, setRole] = useState<Role>();
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [requestCount, setRequestCount] = useState<number>(0);
