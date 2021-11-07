@@ -39,16 +39,25 @@ namespace Spotify
                 RedirectUri = _config.RedirectUri
 
             };
-            var response = await _spotifyAccountsClient.GetAccessToken(request);
 
-            var spotifyTokens = new SpotifyCredentials
+            try
             {
-                AccessToken = response.AccessToken,
-                RefreshToken = response.RefreshToken,
-                ExpiresAt = DateTime.UtcNow.AddSeconds(response.ExpiresIn)
-            };
+                var response = await _spotifyAccountsClient.GetAccessToken(request);
 
-            return spotifyTokens;
+                var spotifyTokens = new SpotifyCredentials
+                {
+                    AccessToken = response.AccessToken,
+                    RefreshToken = response.RefreshToken,
+                    ExpiresAt = DateTime.UtcNow.AddSeconds(response.ExpiresIn)
+                };
+
+                return spotifyTokens;
+            } catch (ApiException ex)
+            {
+                var content = ex.Content;
+                Console.WriteLine(ex);
+                throw ex;
+            }
         }
 
         public async Task<SpotifyCredentials> RefreshCredentials(SpotifyCredentials credentials)

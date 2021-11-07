@@ -22,91 +22,92 @@ import AddCohost from './components/pages/host/cohost/addCohost/AddCohost';
 import NotificationSettings from './components/pages/host/notificationSettings/NotificationSettings';
 import TrackRequestNotifications from './components/pages/host/trackRequestNotifications/TrackRequestNotifications';
 import { GATrackPageViews } from './components/shared/googleAnalytics/GATrackPageViews';
+import { SpotifyThemeProvider } from './components/shared/spotifyThemeProvider/SpotifyThemeProvider';
 
 export default function App() {
 
   return (
     <PartyContextProvider>
-      
-      <Router>
-        <div className={styles.App}>
-          <GATrackPageViews>
-            <ToastContextProvider>
-              <Switch>
-                <Route path="*">
-                  <SlideLeft>
+      <SpotifyThemeProvider>
+        <Router>
+          <div className={styles.App}>
+            <GATrackPageViews>
+              <ToastContextProvider>
+                <Switch>
+                  <Route path="*">
+                    <SlideLeft>
 
-                    <Route path="/join/:id">
-                      <Join type="guest" />
-                    </Route>
+                      <Route path="/join/:id">
+                        <Join type="guest" />
+                      </Route>
 
-                    <Route path="/cohost/join/:id/:cohostJoinToken">
-                      <Join type="cohost" />
-                    </Route>
+                      <Route path="/cohost/join/:id/:cohostJoinToken">
+                        <Join type="cohost" />
+                      </Route>
 
-                    <Route path="/scan">
-                      <Scan />
-                    </Route>
+                      <Route path="/scan">
+                        <Scan />
+                      </Route>
 
-                    <Route path='/party/guest/requests'>
-                      <ManageGuestRequests />
-                    </Route>
+                      <Route path='/party/guest/requests'>
+                        <ManageGuestRequests />
+                      </Route>
 
-                    <Route path='/party/guest/request'>
-                      <Request />
-                    </Route>
+                      <Route path='/party/guest/request'>
+                        <Request />
+                      </Route>
 
-                    <Route path='/party/guest'>
-                      <GuestHome />
-                    </Route>
+                      <Route path='/party/guest'>
+                        <GuestHome />
+                      </Route>
 
-                    <Route path='/party/host/notifications'>
-                      <NotificationSettings />
-                    </Route>
+                      <Route path='/party/host/notifications'>
+                        <NotificationSettings />
+                      </Route>
 
-                    <Route path='/party/host/requests'>
-                      <ManageRequests />
-                    </Route>
+                      <Route path='/party/host/requests'>
+                        <ManageRequests />
+                      </Route>
 
-                    <Route path='/party/host'>
-                      <HostHome />
-                    </Route>
-                    
-                    <Route path="/party/cohost/intro">
-                      <CohostIntro />
-                    </Route>
-                    
-                    <Route path="/party/cohost/invite">
-                      <AddCohost />
-                    </Route>
+                      <Route path='/party/host'>
+                        <HostHome />
+                      </Route>
+                      
+                      <Route path="/party/cohost/intro">
+                        <CohostIntro />
+                      </Route>
+                      
+                      <Route path="/party/cohost/invite">
+                        <AddCohost />
+                      </Route>
 
-                    <Route path='/party/cohost'>
-                      <HostHome />
-                    </Route>
-                    
-                    <Route path="/party/create/intro">
-                      <CreatePartyIntro />
-                    </Route>
-                    
-                    <Route path="/party/create">
-                      <CreateParty />
-                    </Route>
+                      <Route path='/party/cohost'>
+                        <HostHome />
+                      </Route>
+                      
+                      <Route path="/party/create/intro">
+                        <CreatePartyIntro />
+                      </Route>
+                      
+                      <Route path="/party/create">
+                        <CreateParty />
+                      </Route>
 
-                    <Route path="/" exact>
-                      <Home />
-                    </Route>
-                  </SlideLeft>
+                      <Route path="/" exact>
+                        <Home />
+                      </Route>
+                    </SlideLeft>
 
-                </Route>
+                  </Route>
 
-              </Switch>
-              </ToastContextProvider>
-            
-          </GATrackPageViews>
-          <TrackRequestNotifications />
-        </div>
-      </Router>
-        
+                </Switch>
+                </ToastContextProvider>
+              
+            </GATrackPageViews>
+            <TrackRequestNotifications />
+          </div>
+        </Router>
+      </SpotifyThemeProvider>
     </PartyContextProvider>
   );
 }

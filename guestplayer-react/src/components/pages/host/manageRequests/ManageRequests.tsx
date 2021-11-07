@@ -19,6 +19,7 @@ import { Subscription } from '../../../../api/services/websocketService';
 import { useApiErrorHandler } from '../../../../hooks/apiErrorHandlerHook';
 import Dialog from '../../../shared/dialog/Dialog';
 import { Page } from '../../../shared/page/Page';
+import { SpotifyLinkBar } from '../../../shared/spotifyLinkBar/SpotifyLinkBar';
 
 const ManageRequests = () => {
 
@@ -36,6 +37,7 @@ const ManageRequests = () => {
       history.push('/');
     }
   }, [party, partyLoaded]);
+
 
   useEffect(() => {
     let trackRequestSubscription: Subscription;
@@ -251,6 +253,8 @@ const ManageRequests = () => {
           </TransitionGroup>
         </div>
       }
+
+      <SpotifyLinkBar />
             
       <Dialog
         title="No device found"

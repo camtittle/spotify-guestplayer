@@ -15,9 +15,7 @@ interface ConnectToSpotifyProps {
 const spotifyAuthBaseUrl = 'https://accounts.spotify.com';
 const spotifyAuthPath = 'authorize';
 const scopes = [
-  'user-read-playback-state',
   'user-modify-playback-state',
-  'user-read-currently-playing'
 ];
 const responseCode = 'code';
 const stateKey = 'spotify-auth-state';

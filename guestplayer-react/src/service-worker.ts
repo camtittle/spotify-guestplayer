@@ -94,41 +94,42 @@ const isTrackRequestNotification = (notification: PushNotification<any>): notifi
 }
 
 const handleTrackRequestNotification = (notification: PushNotification<TrackRequestResponse>) => {
-  return self.registration.getNotifications().then(notifications => {
+  // temporarily commenting this out
 
-    let notificationTitle = 'New track request';
-    let options = {
-      body: `Tap to view`,
-      icon: notification?.data?.artworkUrl,
-      data: {} as any
-    }
+  // return self.registration.getNotifications().then(notifications => {
+  //   if (notifications && notifications.length > 0) {
+  //     console.log(notifications);
+  //     // We have an open notification, so merge new notification with this one
+  //     const existingNotification = notifications[0];
+  //     const count = existingNotification.data?.newRequestCount || 1;
 
-    if (notifications && notifications.length > 0) {
-      console.log(notifications);
-      // We have an open notification, so merge new notification with this one
-      const existingNotification = notifications[0];
-      const count = existingNotification.data?.newRequestCount || 1;
+  //     options.body = `Tap to view`;
+  //     options.data = {
+  //       newRequestCount: count + 1
+  //     };
+  //     notificationTitle = `${options.data.newRequestCount} new track requests`;
 
-      options.body = `Tap to view`;
-      options.data = {
-        newRequestCount: count + 1
-      };
-      notificationTitle = `${options.data.newRequestCount} new track requests`;
+  //     notifications.forEach(x => x.close()); // Close existing notifications
+  //   } else {
+  //     options.body = 'Tap to view';
+  //     options.data = {
+  //       newRequestCount: 1
+  //     };
+  //     notificationTitle = 'New track request';
+  //   }
+  // });
 
-      notifications.forEach(x => x.close()); // Close existing notifications
-    } else {
-      options.body = 'Tap to view';
-      options.data = {
-        newRequestCount: 1
-      };
-      notificationTitle = 'New track request';
-    }
+  
+  let notificationTitle = 'New track request';
+  let options = {
+    body: 'Tap to view',
+    icon: notification?.data?.artworkUrl
+  };
 
-    return self.registration.showNotification(
-      notificationTitle,
-      options
-    );
-  });
+  self.registration.showNotification(
+    notificationTitle,
+    options
+  );
 }
 
 const handlePushNotification = (notification: PushNotification<any>) => {

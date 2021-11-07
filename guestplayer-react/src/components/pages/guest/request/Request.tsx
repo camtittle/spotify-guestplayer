@@ -13,6 +13,7 @@ import ConfirmRequestDialog, { ConfirmRequestDialogType } from './confirmRequest
 import Search from '../../../../assets/img/search.svg';
 import { useApiErrorHandler } from '../../../../hooks/apiErrorHandlerHook';
 import { Page } from '../../../shared/page/Page';
+import { SpotifyLinkBar } from '../../../shared/spotifyLinkBar/SpotifyLinkBar';
 
 const Request = () => {
 
@@ -82,6 +83,8 @@ const Request = () => {
         <TextInput value={searchValue} onChange={onChangeSearchValue} className={styles.textInput} ref={textInputRef} icon={Search} />
         <TrackList tracks={tracks} onClickTrack={onClickTrack} className={styles.trackList} />
       </div>
+
+      <SpotifyLinkBar />
 
       <ConfirmRequestDialog ref={confirmRequestDialogRef} party={party} />
     </Page>

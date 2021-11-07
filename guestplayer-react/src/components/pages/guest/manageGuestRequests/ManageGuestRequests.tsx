@@ -10,6 +10,7 @@ import { TitleBar } from "../../../shared/titleBar/TitleBar";
 import TrackListItem from "../../../shared/trackListItem/TrackListItem";
 import * as RequestService from '../../../../api/services/requestService';
 import styles from './ManageGuestRequests.module.scss';
+import { SpotifyLinkBar } from "../../../shared/spotifyLinkBar/SpotifyLinkBar";
 
 const ManageGuestRequests = () => {
 
@@ -83,6 +84,8 @@ const ManageGuestRequests = () => {
         
         </Fragment>
       }
+
+      <SpotifyLinkBar />
 
     </FlexContainer>
   )
