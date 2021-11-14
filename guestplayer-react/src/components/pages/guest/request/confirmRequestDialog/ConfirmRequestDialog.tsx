@@ -71,6 +71,12 @@ export class ConfirmRequestDialogType extends Component<ConfirmRequestProps, Con
     this.props.history.push('/party/guest/requests')
   };
 
+  showFullScreenAd = () => {
+    const path = window.location.pathname + window.location.search;
+    const encodedPath = encodeURIComponent(path);
+    this.props.history.replace(`/ad/${encodedPath}`);
+  }
+
   onConfirm = () => {
     if (!this.state.track) {
       return;
@@ -87,12 +93,13 @@ export class ConfirmRequestDialogType extends Component<ConfirmRequestProps, Con
     
     this.props.apiErrorHandler(async () => {
       try {
-        await requestTrack(this.state.track.spotifyId);
+        // await requestTrack(this.state.track.spotifyId);
         this.context.showToast({
           style: ToastStyle.Success,
           text: 'Track requested'
         });
-      } catch (e) {
+        this.showFullScreenAd();
+      } catch (e: any) {
         if (e.isApiError && e.errorCode === ErrorCode.TooManyPendingRequests) {
           this.showTooManyRequestsDialog();
         } else {

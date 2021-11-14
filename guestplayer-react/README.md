@@ -19,6 +19,7 @@ Builds the app for production to the `build` folder.\
 
 ### AWS
 ```
+npm run build
 serverless s3deploy -v
 ```
 

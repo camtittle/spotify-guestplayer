@@ -8,7 +8,7 @@ import TrackList from '../../../shared/trackList/TrackList';
 import styles from './Request.module.scss';
 import { throttle } from 'throttle-debounce';
 import { PartyContext } from '../../../../contexts/partyContext';
-import { useHistory } from 'react-router';
+import { useHistory, useLocation } from 'react-router';
 import ConfirmRequestDialog, { ConfirmRequestDialogType } from './confirmRequestDialog/ConfirmRequestDialog';
 import Search from '../../../../assets/img/search.svg';
 import { useApiErrorHandler } from '../../../../hooks/apiErrorHandlerHook';
@@ -19,13 +19,20 @@ const Request = () => {
 
   const throttleRate = 500;
 
-  const [searchValue, setSearchValue] = useState('');
+  const [searchValue, _setSearchValue] = useState('');
   const [tracks, setTracks] = useState<Track[] | undefined>(undefined);
   const {party, partyLoaded} = useContext(PartyContext);
   const history = useHistory();
   const textInputRef = useRef<TextInput>(null);
   const confirmRequestDialogRef = useRef<ConfirmRequestDialogType>(null);
   const apiErrorHandler = useApiErrorHandler();
+
+  const setSearchValue = (searchValue: string) => {
+    const queryParam = "?" + new URLSearchParams({ q: searchValue }).toString();
+    const newPath = history.location.pathname + queryParam;
+    window.history.replaceState(null, "", newPath)
+    _setSearchValue(searchValue);
+  }
 
   const fetchSearchResults = useCallback(throttle(throttleRate, (searchTerm: string) => {
     if (!party) {
@@ -56,10 +63,6 @@ const Request = () => {
     }, 300);
   }, [textInputRef.current]);
 
-  if (!party) {
-    return null;
-  }
-
   const onChangeSearchValue = (value: string) => {
     setSearchValue(value);
     if (value) {
@@ -68,6 +71,18 @@ const Request = () => {
       setTracks(undefined);
     }
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    let searchQuery = params.get('q')
+    if (searchQuery) {
+      onChangeSearchValue(searchQuery);
+    }
+  }, []);
+  
+  if (!party) {
+    return null;
+  }
 
   const onClickTrack = (track: Track) => {
     if (!confirmRequestDialogRef.current) {
@@ -78,7 +93,7 @@ const Request = () => {
   };
 
   return (
-    <Page containerClassName={styles.flexContainer}>
+    <Page className={styles.flexContainer}>
       <div className={styles.container}>
         <TextInput value={searchValue} onChange={onChangeSearchValue} className={styles.textInput} ref={textInputRef} icon={Search} />
         <TrackList tracks={tracks} onClickTrack={onClickTrack} className={styles.trackList} />

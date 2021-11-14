@@ -5,13 +5,13 @@ import { TitleBar } from "../titleBar/TitleBar"
 interface PageProps {
   isHome?: boolean;
   onClickBack?: () => void;
-  containerClassName?: string;
+  className?: string;
   menuItems?: MenuItem[]
 }
 
-export const Page: React.FC<PageProps> = ({children, isHome, menuItems, containerClassName, onClickBack}) => {
+export const Page: React.FC<PageProps> = ({children, isHome, menuItems, className, onClickBack}) => {
   return (
-    <FlexContainer className={containerClassName}>
+    <FlexContainer className={className}>
       <TitleBar showMenuButton={isHome} showBackButton={!isHome} onClickBack={onClickBack} menuItems={menuItems}></TitleBar>
       {children}
     </FlexContainer>

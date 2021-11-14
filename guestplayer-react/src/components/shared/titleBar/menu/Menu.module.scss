@@ -78,5 +78,15 @@
     &:active {
         transform: scale3d(0.97, 0.97, 1);
     }
+}
 
+.menuFooter {
+    position: absolute;
+    bottom: 12px;
+
+    a {
+        text-decoration: none;
+        font-size: 14px;
+        color: rgb(141, 141, 141);
+    }
 }

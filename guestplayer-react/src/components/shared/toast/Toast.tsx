@@ -14,11 +14,6 @@ export interface ToastNotification {
   text: string;
 }
 
-interface ToastProps {
-  notification?: ToastNotification;
-}
-
-
 class Toast extends Component {
 
   private duration = 5000;

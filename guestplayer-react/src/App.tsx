@@ -23,6 +23,8 @@ import NotificationSettings from './components/pages/host/notificationSettings/N
 import TrackRequestNotifications from './components/pages/host/trackRequestNotifications/TrackRequestNotifications';
 import { GATrackPageViews } from './components/shared/googleAnalytics/GATrackPageViews';
 import { SpotifyThemeProvider } from './components/shared/spotifyThemeProvider/SpotifyThemeProvider';
+import { AdPage } from './components/pages/shared/ad/AdPage';
+import { PrivacyPolicy } from './components/pages/shared/privacyPolicy/PrivacyPolicy';
 
 export default function App() {
 
@@ -91,6 +93,14 @@ export default function App() {
                       
                       <Route path="/party/create">
                         <CreateParty />
+                      </Route>
+                      
+                      <Route path="/ad/:redirectPath">
+                        <AdPage />
+                      </Route>
+                      
+                      <Route path="/privacy">
+                        <PrivacyPolicy />
                       </Route>
 
                       <Route path="/" exact>
