@@ -1,0 +1,19 @@
+{
+    "display_name" : "Test McTestface",
+    "external_urls" : {
+      "spotify" : "https://open.spotify.com/user/testmctestface"
+    },
+    "followers" : {
+      "href" : null,
+      "total" : 41
+    },
+    "href" : "https://api.spotify.com/v1/users/testmctestface",
+    "id" : "testmctestface",
+    "images" : [ {
+      "height" : null,
+      "url" : "https://autotestframework.github.io/Milestones_Repo/img/use2.png",
+      "width" : null
+    } ],
+    "type" : "user",
+    "uri" : "spotify:user:testmctestface"
+  }

@@ -1,5 +1,5 @@
 import {
-  BrowserRouter as Router,
+  BrowserRouter,
   Switch,
   Route,
 } from 'react-router-dom';
@@ -31,7 +31,7 @@ export default function App() {
   return (
     <PartyContextProvider>
       <SpotifyThemeProvider>
-        <Router>
+        <BrowserRouter>
           <div className={styles.App}>
             <GATrackPageViews>
               <ToastContextProvider>
@@ -116,7 +116,7 @@ export default function App() {
             </GATrackPageViews>
             <TrackRequestNotifications />
           </div>
-        </Router>
+        </BrowserRouter>
       </SpotifyThemeProvider>
     </PartyContextProvider>
   );
