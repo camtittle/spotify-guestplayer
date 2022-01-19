@@ -46,15 +46,24 @@ describe('createParty', () => {
             cy.fixture('spotifyUserDetails.json').then(userProfile => {
                 cy.contains(userProfile.display_name);
                 cy.get('[class*=profileDetails]').find('img').should('have.attr', 'src').should('include', userProfile.images[0].url);
+
+                // Input party name
+                cy.contains('Next').click();
+                const partyName = 'My Test Party';
+                cy.get('[class*=textInput]').type(partyName);
+                cy.get('[class*=textInput]').should('have.value', partyName);
+
+                // Create party
+                cy.contains('Finish').click();
+                cy.url().should('contain', '/party/host');
+
+                // Dismiss push notifications dialog
+                cy.get('[class*=dialog]').contains('Cancel').click();
+
+                // Check header
+                cy.get('[class*=header]').contains(partyName).should('have.text', partyName);
             });
         });
     });
 
-    specify('party creation flow', () => {
-
-        cy.visit('/');
-
-
-
-    });
 })
